@@ -114,6 +114,10 @@ export default function Lecons() {
     );
   };
 
+  const onDelete = async () => {
+    const r = await execute(COURS.DELETE_MODULE({ classeId, moduleId }));
+  };
+
   useEffect(() => {
     loadLessons();
   }, []);
@@ -162,6 +166,7 @@ export default function Lecons() {
                   </button>
                   <button
                     onClick={() => {
+                      onDelete();
                       console.log("Supprimer");
                       setIsMenuOpen(false);
                     }}

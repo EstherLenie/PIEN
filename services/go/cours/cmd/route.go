@@ -32,5 +32,8 @@ func route(app *App) http.Handler {
 	router.PUT("/cours/classes/:classId/modules/:moduleId/order-lessons", orderModuleLessons(app, lessonsRepository))
 	router.PUT("/cours/classes/:classId/order-modules", orderClassModules(app, moduleRepository))
 
+	router.DELETE("/cours/classes/:classId/modules/:moduleId", deleteModule(app, moduleRepository))
+	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId", deleteLesson(app, lessonsRepository))
+
 	return router
 }

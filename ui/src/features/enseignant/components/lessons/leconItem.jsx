@@ -1,16 +1,20 @@
 import { useState, useRef, useEffect } from "react"; // Ajout de hooks
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../../components/button/button";
 import Card from "../../../../components/card/card";
 import CardBody from "../../../../components/card/cardBody";
 import CardHeader from "../../../../components/card/cardHeader";
 import CardFooter from "../../../../components/card/cardFooter";
 import Icon from "../../../../components/icon/icon";
+import COURS from "../../../../services/api/cours";
+import useApi from "../../../../hooks/api";
 
 export default function LeconItem({ lecon }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { execute } = useApi();
+  const { moduleId, classeId, leconId } = useParams();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -25,6 +29,12 @@ export default function LeconItem({ lecon }) {
   const toggleMenu = (e) => {
     e.stopPropagation();
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const onDelete = async () => {
+    const r = await execute(
+      COURS.DELETE_LECON({ classeId, moduleId, leconId })
+    );
   };
 
   return (
@@ -58,7 +68,7 @@ export default function LeconItem({ lecon }) {
               </button>
               <button
                 onClick={() => {
-                  console.log("Supprimer");
+                  onDelete();
                   setIsMenuOpen(false);
                 }}
                 className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"

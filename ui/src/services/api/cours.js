@@ -112,4 +112,21 @@ COURS.SORT_MODULES = ({ classeId, data }) => ({
   body: data,
 });
 
+COURS.DELETE_MODULE = ({ classeId, moduleId }) => ({
+  method: "DELETE",
+  url: host + "/classes/" + classeId + "/modules/" + moduleId,
+});
+
+COURS.DELETE_LECON = ({ classeId, moduleId, leconId }) => ({
+  method: "DELETE",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId,
+});
+
 export default COURS;

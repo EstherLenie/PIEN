@@ -11,6 +11,7 @@ export default function GestionnaireClasseDashboard() {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("");
 const [classeSelectionnee, setClasseSelectionnee] = useState(null);
+const [count, setCount]=useState(0)
 
 
   // Récupération des classes
@@ -23,7 +24,19 @@ const [classeSelectionnee, setClasseSelectionnee] = useState(null);
       .then((data) => setClasses(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [count]);
+  const handleSuppression= async(classeId,classeNom)=>
+  { alert(`La classe ${classeNom} va etre supprimee`)
+    await(
+    fetch(`${baseUrl}${apiUrl}classes/delete/${classeId}` ,
+        {
+      method:"DELETE",
+    }
+    )
+  
+    )
+    setCount(prev=>prev+1);
+  }
 
   // Filtrage
   const filteredClasses = classes.filter(
@@ -45,12 +58,12 @@ const [classeSelectionnee, setClasseSelectionnee] = useState(null);
     Créer une classe
   </NavLink>
 
-  <NavLink
+  {/* <NavLink
     to="assigner-etudiant"
     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
   >
     Assigner un étudiant
-  </NavLink>
+  </NavLink> */}
 </div>
 
 
@@ -100,12 +113,13 @@ const [classeSelectionnee, setClasseSelectionnee] = useState(null);
                     {/* Boutons visuels pour prototype */}
                     <button
                       onClick={() => alert(`Modifier la classe ${classe.nom}`)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 text-sm"
+                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 text-sm disabled:gray"
                     >
                       Modifier
                     </button>
                     <button
-                      onClick={() => alert(`Supprimer la classe ${classe.nom}`)}
+                      // onClick={() => alert(`Supprimer la classe ${classe.nom}`)}
+                      onClick={()=>handleSuppression(classe.id,classe.nom)}
                       className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm"
                     >
                       Supprimer

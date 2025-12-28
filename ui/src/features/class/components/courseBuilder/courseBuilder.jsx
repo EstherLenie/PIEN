@@ -9,10 +9,10 @@ import CourseContent from "./CourseContent";
 import CourseDescription from "./courseDescription";
 import Preview from "./preview";
 
-export default function CourseBuilder() {
+export default function CourseBuilder({ data }) {
   return (
     <main className="flex flex-col flex-1">
-      <CourseBulderProvider>
+      <CourseBulderProvider lecon={data}>
         <ResourceChoser>
           <TabPane defaultValue="builder">
             <BuilderToolbar />

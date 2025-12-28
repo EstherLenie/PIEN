@@ -10,17 +10,15 @@ import EnseignantClasseLayout from "../layouts/enseignant/enseignantClasseLayout
 import EnseignantClasses from "../pages/enseignant/classes";
 import EnseignantClasse from "../pages/enseignant/classe";
 import EnseignantCours from "../pages/enseignant/lecons";
-import ClassesLoader from "../loaders/enseignant/classes";
 import ClasseLoader from "../loaders/enseignant/class";
-import ModuleLoader from "../loaders/enseignant/module";
-import Module from "../pages/enseignant/module";
-import GestionnaireLayout from "../layouts/gestionnaireLayout";
+
 import CreationClasse from "../pages/gestionnaire/creationClasse";
 import AssignationEtudiants from "../pages/gestionnaire/assignationEtudiants";
 import DashboardGestionnaire from "../pages/gestionnaire/dashboardGestionnaire";
 import StudentProfile from "../pages/enseignant/studentProfile";
 import MesElevesPanel from "../pages/enseignant/students";
 import leconLoader from "../loaders/enseignant/lecon";
+import Lecon from "../pages/enseignant/lecon";
 import GestionnaireMainLayout from "../layouts/gestionnaire/gestionnaireMainLayout";
 import GestionnaireClasseDashboard from "../pages/gestionnaire/gestionnaireClasseDashboard";
 import GestionnaireClasseLayout from "../layouts/gestionnaire/gestionnaireClasseLayout";
@@ -65,7 +63,6 @@ export default createBrowserRouter([
             children: [
               {
                 index: true,
-                loader: ClassesLoader,
                 element: <EnseignantClasses />,
               },
               {
@@ -79,16 +76,17 @@ export default createBrowserRouter([
                   {
                     path: "modules",
                     children: [
-                      { index: true, element: <Module /> },
                       {
                         path: ":moduleId",
                         children: [
                           {
                             index: true,
                             element: <EnseignantCours />,
-                            loader: ModuleLoader,
                           },
-                          ,
+                          {
+                            path: "lecons/:leconId",
+                            element: <Lecon />,
+                          },
                         ],
                       },
                     ],
@@ -100,7 +98,7 @@ export default createBrowserRouter([
         ],
       },
       {
-        path: "enseignant/classes/:classeId/modules/:moduleId/lecons/:coursId/gerer",
+        path: "enseignant/classes/:classeId/modules/:moduleId/lecons/:leconId/contenus/:versionId",
         loader: leconLoader,
         element: <Cours />,
       },
@@ -108,45 +106,43 @@ export default createBrowserRouter([
         path: "enseignant/classes/:classeId/modules/:moduleId/lecons/new",
         element: <Cours />,
       },
-     {
-  path: "gestionnaire",
-  element: (
-    <PrivateOnly role="GESTIONNAIRE">
-      <GestionnaireMainLayout />
-    </PrivateOnly>
-  ),
-  children: [
-    {
-      index: true,
-      element: <Navigate to="dashboard" />,
-    },
-    {
-      path: "dashboard",
-      element: <DashboardGestionnaire />, // Écran principal / landing
-    },
-    {
-      path: "classes",
-      element: <GestionnaireClasseLayout/>,
-      children: [
-         {
-          // path: "dashboard",
-          index:true,
-          element: <GestionnaireClasseDashboard />, // Formulaire création de classe
-        },
-        {
-          path: "create-classe",
-          element: <CreationClasse/>, // Formulaire création de classe
-        },
-        {
-          path: ":assigner-etudiant",
-          element: <AssignationEtudiants/>, // Assignation d'étudiants
-        },
-      ],
-    },
-  ],
-},
-
-
+      {
+        path: "gestionnaire",
+        element: (
+          <PrivateOnly role="GESTIONNAIRE">
+            <GestionnaireMainLayout />
+          </PrivateOnly>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Navigate to="dashboard" />,
+          },
+          {
+            path: "dashboard",
+            element: <DashboardGestionnaire />, // Écran principal / landing
+          },
+          {
+            path: "classes",
+            element: <GestionnaireClasseLayout />,
+            children: [
+              {
+                // path: "dashboard",
+                index: true,
+                element: <GestionnaireClasseDashboard />, // Formulaire création de classe
+              },
+              {
+                path: "create-classe",
+                element: <CreationClasse />, // Formulaire création de classe
+              },
+              {
+                path: ":assigner-etudiant",
+                element: <AssignationEtudiants />, // Assignation d'étudiants
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);

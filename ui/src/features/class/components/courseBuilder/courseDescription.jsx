@@ -9,8 +9,13 @@ import {
 } from "../../../../components/dropdown/index";
 
 export default function CourseDescription() {
-  const { descriptionOpen, closeDescription, description, setDescription } =
-    useContext(courseBuilderContext);
+  const {
+    descriptionOpen,
+    closeDescription,
+    description,
+    setDescription,
+    save,
+  } = useContext(courseBuilderContext);
 
   const visible = descriptionOpen ? "w-150" : "w-0";
 
@@ -37,7 +42,7 @@ export default function CourseDescription() {
           <input
             type="text"
             name="title"
-            value={description.title}
+            value={description.titre}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-1 bg-transparent border-b-2  border-b-gray-900  focus:border-b-blue-900 focus:border-b-4 outline-none"
           />
@@ -64,7 +69,10 @@ export default function CourseDescription() {
 
       <div className="w-full px-4 ">
         <div className="w-full flex items-center gap-1 h-10 text-sm font-bold ">
-          <button className="flex-1 cursor-pointer h-full transition-all duration-300 bg-primary">
+          <button
+            onClick={save}
+            className="flex-1 cursor-pointer h-full transition-all duration-300 bg-primary"
+          >
             Sauvegarder
           </button>
           <Dropdown className="h-full">

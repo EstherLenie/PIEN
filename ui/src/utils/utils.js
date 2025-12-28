@@ -103,3 +103,10 @@ export function isEmpty(p) {
 export function id() {
   return crypto.randomUUID();
 }
+
+export function split(a) {
+  return a
+    .split("\n")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+}

@@ -1,4 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AsyncSelect from "../../../../components/select/select";
+import CLASSE from "../../../../services/api/classe";
+import { AuthContext } from "../../../../context/authContext";
+import { sendRequest } from "../../../../services/utils/request";
+import useApi from "../../../../hooks/api";
+import { split } from "../../../../utils/utils";
 
 const ListPreview = ({ content, title }) => {
   const items = content
@@ -22,16 +28,26 @@ const ListPreview = ({ content, title }) => {
   );
 };
 
-const ModuleMetadataForm = ({ onSubmit }) => {
+const ModuleMetadataForm = ({
+  onSubmit,
+  data: { id, titre = "", description = "", classId },
+  mode = "SAVE",
+}) => {
   const [formData, setFormData] = useState({
-    module: "",
-    titre: "",
-    description: "",
+    classe: classId ?? id,
+    titre: titre,
+    description: description,
     objectifs: "",
     competencesCiblees: "",
     prerequis: "",
     isPublished: false,
   });
+
+  const {
+    user: { id: userId },
+  } = useContext(AuthContext);
+
+  const { execute } = useApi();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,8 +59,20 @@ const ModuleMetadataForm = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const newModule = { ...formData };
+    newModule.competencesCiblees = split(newModule.competencesCiblees);
+    newModule.prerequis = split(newModule.prerequis);
+    newModule.objectifs = split(newModule.objectifs);
+    onSubmit(newModule);
   };
+
+  async function fetchOptions() {
+    const response = await execute(CLASSE.ENSEIGNANT(userId));
+    if (!response.data) {
+      return [];
+    }
+    return response.data;
+  }
 
   return (
     <div className="p-6 bg-white border-gray-100 w-full mx-auto">
@@ -54,24 +82,25 @@ const ModuleMetadataForm = ({ onSubmit }) => {
             htmlFor="titre"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Module <span className="text-red-500">*</span>
+            Classe <span className="text-red-500">*</span>
           </label>
-          <select
-            name="module"
-            id="module"
-            value={formData.module}
-            onChange={handleChange}
-            required
-            placeholder="Ex: Les Modèles de Propagation des Ondes Radio"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          ></select>
+          <AsyncSelect
+            onChange={(v) =>
+              handleChange({ target: { name: "classe", value: v } })
+            }
+            value={formData.classe}
+            showSearch={false}
+            fetchOptions={fetchOptions}
+            getOptionLabel={(option) => option.nom}
+            getOptionValue={(option) => option.id}
+          />
         </div>
         <div>
           <label
             htmlFor="titre"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Titre de la Leçon <span className="text-red-500">*</span>
+            Titre du module <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -195,7 +224,9 @@ const ModuleMetadataForm = ({ onSubmit }) => {
               <path d="M12 5v14" />
               <path d="M5 12h14" />
             </svg>
-            <span>Créer le module</span>
+            <span>
+              {mode === "SAVE" ? "Créer le module" : "Editer le module"}
+            </span>
           </button>
         </div>
       </form>

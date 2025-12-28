@@ -1,6 +1,5 @@
 import { useEffect, useState, createContext, useMemo } from "react";
 import useApi from "../hooks/api";
-import USER from "../services/api/user";
 import { storage } from "../utils/utils";
 
 export const AuthContext = createContext({

@@ -69,10 +69,8 @@ export default function EnseignantSidebar() {
             Annonces
           </NavLink>
         </SideBarItem>
-        <Divider className="mt-8" />
-        <SideBarItem>
-          <p className="text-gray-500">Parametres</p>
-        </SideBarItem>
+        <Divider className="mt-2" />
+
         <SideBarItem icon="profil">
           <NavLink to="classes" className="p-2">
             Profile

@@ -13,7 +13,7 @@ import Module from "./module";
 import Student from "./student";
 
 export default function Classe() {
-  const { cours: coursPromise, classe } = useLoaderData();
+  const { classe } = useLoaderData();
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function Classe() {
       </Loader>
 
       <Tab value="modules">
-        <section className="py-3 px-5 pb-0 mt-6 bg-white mb-4 flex rounded-xl text-xs">
+        <div className="py-3 px-5 pb-0 mt-6 bg-white mb-4 flex rounded-xl text-xs">
           <TabList>
             <TabItem value="modules" icon="module">
               Modules
@@ -46,12 +46,10 @@ export default function Classe() {
               Commentaires
             </TabItem>
           </TabList>
-        </section>
+        </div>
         <TabBody>
           <TabContent value="modules">
-            <Loader promise={coursPromise}>
-              <Module />
-            </Loader>
+            <Module />
           </TabContent>
           <TabContent value="eleves">
             <Student />

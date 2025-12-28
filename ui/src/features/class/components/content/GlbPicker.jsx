@@ -89,7 +89,6 @@ export default function GlbPicker({ save, data }) {
   };
 
   const onSaveAnnotations = (annotations) => {
-    debugger;
     save({ annotations });
   };
 

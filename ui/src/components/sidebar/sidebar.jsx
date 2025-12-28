@@ -28,7 +28,7 @@ export default function SideBar(props, ref) {
     []
   );
 
-  const className = open ? "w-60" : "w-10";
+  const className = open ? "w-60" : "w-16";
 
   return (
     <sideBarContext.Provider value={{ toggle, open }}>

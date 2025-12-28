@@ -28,7 +28,6 @@ export default function ResourceChoser({ children }) {
   }, []);
 
   const choose = useCallback((component) => {
-    debugger;
     chooserFunction.current(component);
     closeChoser();
   }, []);

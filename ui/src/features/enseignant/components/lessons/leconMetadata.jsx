@@ -1,4 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AsyncSelect from "../../../../components/select/select";
+import CLASSE from "../../../../services/api/classe";
+import { AuthContext } from "../../../../context/authContext";
+import { sendRequest } from "../../../../services/utils/request";
+import { useParams } from "react-router-dom";
+import COURS from "../../../../services/api/cours";
 
 const ListPreview = ({ content, title }) => {
   const items = content
@@ -23,9 +29,11 @@ const ListPreview = ({ content, title }) => {
 };
 
 const LeconMetadataForm = ({ onSubmit }) => {
+  const { classeId, moduleId } = useParams();
+
   const [formData, setFormData] = useState({
-    classe: "",
-    module: "",
+    classe: classeId,
+    module: moduleId,
     titre: "",
     description: "",
     objectifs: "",
@@ -33,6 +41,10 @@ const LeconMetadataForm = ({ onSubmit }) => {
     prerequis: "",
     isPublished: false,
   });
+
+  const {
+    user: { id },
+  } = useContext(AuthContext);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,8 +56,30 @@ const LeconMetadataForm = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const newLesson = { ...formData };
+
+    newLesson.objectifs = split(formData.objectifs);
+    newLesson.prerequis = split(formData.prerequis);
+    newLesson.competencesCiblees = split(formData.competencesCiblees);
+    onSubmit(newLesson);
   };
+
+  const loadClassOptions = async () => {
+    const r = await sendRequest(CLASSE.ENSEIGNANT(id));
+    return r.body;
+  };
+
+  const loadModuleOptions =
+    formData.classe &&
+    async function () {
+      const r = await sendRequest(COURS.GET_MODULES(classeId));
+      return r.body;
+    };
+
+  const classOptionLabel = (option) => option.nom;
+  const classOptionValue = (option) => option.id;
+  const moduleOptionLabel = (option) => option.titre;
+  const moduleOptionValue = (option) => option.id;
 
   return (
     <div className="p-6 bg-white border-gray-100 w-full mx-auto">
@@ -57,15 +91,15 @@ const LeconMetadataForm = ({ onSubmit }) => {
           >
             Classe<span className="text-red-500">*</span>
           </label>
-          <select
-            name="classe"
-            id="classe"
+          <AsyncSelect
             value={formData.classe}
-            onChange={handleChange}
-            required
-            placeholder="Ex: Les Modèles de Propagation des Ondes Radio"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          ></select>
+            fetchOptions={loadClassOptions}
+            getOptionLabel={classOptionLabel}
+            getOptionValue={classOptionValue}
+            onChange={(v) => {
+              handleChange({ target: { name: "classe", value: v } });
+            }}
+          />
         </div>
         <div>
           <label
@@ -74,15 +108,15 @@ const LeconMetadataForm = ({ onSubmit }) => {
           >
             Module <span className="text-red-500">*</span>
           </label>
-          <select
-            name="module"
-            id="module"
+          <AsyncSelect
             value={formData.module}
-            onChange={handleChange}
-            required
-            placeholder="Ex: Les Modèles de Propagation des Ondes Radio"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          ></select>
+            fetchOptions={loadModuleOptions}
+            getOptionLabel={moduleOptionLabel}
+            getOptionValue={moduleOptionValue}
+            onChange={(v) => {
+              handleChange({ target: { name: "module", value: v } });
+            }}
+          />
         </div>
         <div>
           <label

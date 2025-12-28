@@ -10,6 +10,7 @@ CLASSE.ALL = () => ({
 CLASSE.ENSEIGNANT = (enseignantId) => ({
   method: "GET",
   url: host + "/" + enseignantId,
+  cacheOptions: { cacheFirst: true, cacheResponse: true },
 });
 
 export default CLASSE;

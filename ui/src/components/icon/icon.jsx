@@ -13,11 +13,7 @@ const Icon = memo(({ name, ...props }) => {
 
   return (
     <IconErrorBoundary fallback={<Empty {...props} />}>
-      <Suspense
-        fallback={
-          <span className="w-6 h-6 animate-pulse bg-gray-200 rounded-full" />
-        }
-      >
+      <Suspense fallback={<span {...props} />}>
         <Loaded {...props} />
       </Suspense>
     </IconErrorBoundary>

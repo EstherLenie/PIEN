@@ -5,7 +5,6 @@ const getGoogleMapsEmbedCode = (url) => {
   const googleMapsRegex =
     /(?:https?:\/\/(?:www\.)?google\.com\/maps\/embed\?pb=.*)/;
   const googleMapsMatch = url.match(googleMapsRegex);
-  debugger;
   // Vérifie si l'URL est un lien d'intégration valide
   if (googleMapsMatch) {
     // Si l'URL contient des guillemets (cas où l'utilisateur a copié le code complet), on extrait l'URL

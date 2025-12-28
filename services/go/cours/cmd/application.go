@@ -4,6 +4,7 @@ import (
 	"PIEN/internal"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -79,4 +80,9 @@ func (a *AppBuilder) Build() (*App, error) {
 		logger: a.logger,
 		db:     db,
 	}, nil
+}
+
+func (a *App) int64(c *gin.Context, name string) (int64, error) {
+	return strconv.ParseInt(c.Params.ByName(name), 10, 64)
+
 }

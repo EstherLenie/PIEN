@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCache } from "../context/cacheContext";
+import { sendRequest } from "../services/utils/request";
 
 export default function useApi() {
   const [requestState, setRequestState] = useState({
@@ -7,8 +7,6 @@ export default function useApi() {
     error: false,
     result: null,
   });
-
-  const { set } = useCache();
 
   const execute = async (config, cb, force = false) => {
     setRequestState((state) => ({
@@ -24,9 +22,7 @@ export default function useApi() {
 
       if (result.ok) {
         const response = { data: result.body };
-        if (config.method === "get") {
-          set(config.url, result.body);
-        }
+
         if (cb) return cb(response);
         return response;
       }
@@ -56,27 +52,3 @@ export default function useApi() {
 
   return { execute, requestState };
 }
-
-/**
- *
- * @param {} config
- * @returns
- */
-export const sendRequest = async ({ method = "GET", body, url }) => {
-  const response = await fetch(url, {
-    method,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
-
-  const responseData = await response.json();
-
-  if (!response.ok) {
-    return { ok: false, errorData: responseData, code: response.status };
-  }
-
-  return { ok: true, body: responseData.data };
-};

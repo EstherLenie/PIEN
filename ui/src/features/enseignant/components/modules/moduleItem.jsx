@@ -6,12 +6,12 @@ import CardFooter from "../../../../components/card/cardFooter";
 import Icon from "../../../../components/icon/icon";
 import CardHeader from "../../../../components/card/cardHeader";
 
-export default function ModuleItem({ nom, id, lecon, modification }) {
+export default function ModuleItem({ titre, id, lecons = [], modification }) {
   const navigate = useNavigate();
   return (
     <Card key={id}>
       <CardHeader className="flex justify-between">
-        <h2>{nom}</h2>
+        <h2>{titre}</h2>
         <Icon
           name="option"
           role="button"
@@ -24,7 +24,7 @@ export default function ModuleItem({ nom, id, lecon, modification }) {
           <span className="flex items-center gap-1">
             <Icon name="lesson" className="w-4 h-4" /> Lecons
           </span>
-          <span>{lecon}</span>
+          <span>{lecons.length}</span>
         </p>
         <p className="text-xs  text-gray-600 flex justify-between gap-4 min-w-0 mb-3">
           <span className="flex items-center gap-1 whitespace-nowrap">

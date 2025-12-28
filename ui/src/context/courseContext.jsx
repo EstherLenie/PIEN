@@ -10,7 +10,9 @@ import {
 import { boxArgument, storage } from "../features/class/utils/utils";
 import ResourceChoser from "../features/class/components/organizer/resourceChoser";
 import { deepCopyJSON, id } from "../utils/utils";
-import { useParams } from "react-router-dom";
+import { useLoaderData, useParams } from "react-router-dom";
+import useApi from "../hooks/api";
+import COURS from "../services/api/cours";
 
 export const courseBuilderContext = createContext({
   content: [],
@@ -333,19 +335,29 @@ const reducer = (state, action) => {
   return finalState;
 };
 
-export default function CourseBulderProvider({ children }) {
-  const params = useParams();
-
-  const initialCourse = storage.getCourse() ?? {
-    id: crypto.randomUUID(),
-    description: { title: "", resume: "", objectif: "" },
-    blocks: [{ component: "new", order: 0, id: crypto.randomUUID() }],
+export default function CourseBulderProvider({
+  children,
+  lecon: { id, titre, description, objectifs, versionActive },
+}) {
+  const initialCourse = {
+    id,
+    description: {
+      titre,
+      description,
+      objectifs: objectifs ? objectifs.join("\n") : "",
+    },
     past: [],
     future: [],
+    blocks: versionActive?.contenu ?? [
+      { component: "new", order: 0, id: crypto.randomUUID() },
+    ],
+    versionId: versionActive?.id,
   };
   const [course, dispacth] = useReducer(reducer, initialCourse);
   const [chooserOpened, setChoserOpened] = useState(null);
   const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const { execute } = useApi();
+  const { leconId, classeId, moduleId } = useParams();
 
   const closeChooser = () => {
     setChoserOpened(null);
@@ -365,7 +377,28 @@ export default function CourseBulderProvider({ children }) {
 
   const load = useCallback(() => {}, []);
 
-  const save = useCallback(() => {}, []);
+  const save = useCallback(async () => {
+    const {
+      description: { description, titre },
+      blocks,
+      versionId,
+    } = course;
+    const content = {
+      description,
+      titre,
+      contenu: blocks.filter((b) => b.component != "new"),
+      id: versionId,
+    };
+
+    const r = await execute(
+      COURS.SAVE_CONTENT({
+        classeId,
+        moduleId,
+        leconId,
+        data: content,
+      })
+    );
+  }, [course]);
 
   const deleteBox = useCallback(
     (id) => {
@@ -465,6 +498,7 @@ export default function CourseBulderProvider({ children }) {
       closeDescription,
       setDescription,
       load,
+      save,
       undo,
       redo,
       clean,
@@ -487,6 +521,7 @@ export default function CourseBulderProvider({ children }) {
       openDescription,
       closeDescription,
       setDescription,
+      save,
       undo,
       redo,
       clean,

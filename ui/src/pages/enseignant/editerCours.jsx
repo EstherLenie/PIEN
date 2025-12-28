@@ -3,9 +3,9 @@ import CourseBuilder from "../../features/class/components/courseBuilder/courseB
 import Loader from "../../components/loader/loader";
 
 export default function Cours() {
-  const data = useLoaderData();
+  const { lecon } = useLoaderData();
   return (
-    <Loader promise={data}>
+    <Loader promise={lecon}>
       <CourseBuilder />
     </Loader>
   );

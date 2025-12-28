@@ -1,53 +1,118 @@
 import { useLoaderData, useParams } from "react-router-dom";
 import Modules from "../../features/enseignant/components/modules/modules";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Loader from "../../components/loader/loader";
-import Icon from "../../components/icon/icon";
 import Modal from "../../components/modal/modal";
 import ModuleMetadataForm from "../../features/enseignant/components/modules/moduleMetadata";
+import useApi from "../../hooks/api";
+import COURS from "../../services/api/cours";
+import ModuleSortList from "../../features/enseignant/components/modules/sortList";
 
 export default function Module() {
-  const { modules } = useLoaderData();
+  const { classe } = useLoaderData();
+  const [modules, setModules] = useState([]);
+  const [filteredModules, setFilteredModules] = useState([]);
+  const [sortedModules, setsortedModules] = useState([]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
+  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+  const { execute } = useApi();
+  const { classeId } = useParams();
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const load = async () => {
+    const r = await execute(COURS.GET_MODULES(classeId));
+    if (r.error) {
+      return;
+    }
+    setModules(r.data);
+    setFilteredModules(r.data);
+    setsortedModules(r.data);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  /**
+   *
+   * @param {HTMLInputElement} e
+   */
+  const onSearchModule = (e) => {
+    const inputValue = e.value.trim().toLowerCase();
+    setFilteredModules(() =>
+      modules.filter((module) => {
+        const lowerCaseName = module.titre.toLowerCase();
+        return (
+          lowerCaseName.startsWith(inputValue) ||
+          lowerCaseName.split(" ").some((part) => part.startsWith(inputValue))
+        );
+      })
+    );
+  };
+
+  const onSortedModules = async () => {
+    const r = await execute(
+      COURS.SORT_MODULES({ classeId, data: { content: sortedModules } })
+    );
+    if (r.error) {
+      return;
+    }
+    setModules(r.data);
+    setFilteredModules(r.data);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const openMetadataModal = () => {
+    setIsMetadataModalOpen(true);
+  };
+
+  const closeMedatadaModal = () => {
+    setIsMetadataModalOpen(false);
+  };
+
+  const openSortModal = () => {
+    setIsSortModalOpen(true);
+  };
+
+  const closeSortModal = () => {
+    setIsSortModalOpen(false);
+  };
+
+  const createModule = async (data) => {
+    const r = await execute(COURS.CREATE_MODULE({ classeId, data: data }));
+    setModules((s) => [...s, { ...r }]);
+    closeMedatadaModal();
   };
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow p-6 text-sm mb-3">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold">Modules</h2>
-          <button
-            onClick={openModal}
-            className="flex items-center gap-1 bg-primary text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition"
-          >
-            <Icon name="plus" className="w-4 h-4" />
-            Ajouter un module
-          </button>
-        </div>
-
-        <fieldset className="w-full border-1 p-1 border-gray-400 rounded-sm flex mb-2">
-          <input name="search" className="h-8 border-none flex-1 " />
-          <button className="bg-primary rounded-sm w-8">🔎</button>
-        </fieldset>
-      </div>
-      <Loader promise={modules}>
-        <Modules />
+      <Loader promise={filteredModules}>
+        <Modules
+          onNew={openMetadataModal}
+          onSearch={onSearchModule}
+          onSort={openSortModal}
+        />
       </Loader>
 
       <Modal
         title="Ajouter un module"
-        isOpen={isModalOpen}
-        onClose={closeModal}
+        isOpen={isMetadataModalOpen}
+        onClose={closeMedatadaModal}
       >
-        <ModuleMetadataForm />
+        <Loader promise={classe}>
+          <ModuleMetadataForm onSubmit={createModule} />
+        </Loader>
+      </Modal>
+
+      <Modal
+        onClose={closeSortModal}
+        isOpen={isSortModalOpen}
+        title="Organiser les modules"
+      >
+        <ModuleSortList
+          modules={sortedModules}
+          setModules={setsortedModules}
+          onSorted={onSortedModules}
+        />
       </Modal>
     </>
   );

@@ -10,9 +10,7 @@ import BreadCrumb from "../../components/breadcrumb/breadcrumb";
 
 export const titleContext = createContext({ setTitle: () => {} });
 
-export default function EnseignantLayout({ children }) {
-  const sideBarRef = useRef();
-
+export default function EnseignantLayout() {
   return (
     <>
       <aside>

@@ -4,8 +4,8 @@ encrypt:
   secret: secret
 database:
   host: localhost
-  port: 5432
-  user: postgres
+  port: 5430
+  user: admin
   password: admin
   engine: postgres
   dbname: pien_user

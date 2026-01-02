@@ -387,6 +387,16 @@ export default function CourseBulderProvider({
 
   const load = useCallback(() => {}, []);
 
+  const updateBlock = useCallback(
+    (id, data) => {
+      dispacth({
+        type: "UPDATE_BLOCK",
+        payload: { id, data: deepCopyJSON(data) },
+      });
+    },
+    [dispacth]
+  );
+
   const save = useCallback(async () => {
     const {
       description: { description, titre },
@@ -395,13 +405,14 @@ export default function CourseBulderProvider({
     } = course;
 
     let contentId = versionId;
+
     if (!versionId) {
       const r = await execute(
         COURS.NEW_CONTENT({ classeId, moduleId, leconId })
       );
-      if (r.error) {
-        return;
-      }
+
+      if (r.error) return;
+
       dispacth({ type: "EDIT_VERSION", payload: r.data });
       contentId = r.data;
     }
@@ -419,20 +430,24 @@ export default function CourseBulderProvider({
         const blob = base64ToBlob(block.data.content);
 
         const r = await uploadFile(
-          MULTIMEDIA.UPLOAD_FILE({ file: blob, filename: block.data.fileName })
+          MULTIMEDIA.UPLOAD_FILE({
+            file: blob,
+            filename: block.data.fileName,
+          })
         );
 
         if (r.error) {
           throw new Error("File upload failed");
         }
 
+        const data = {
+          filename: block.data.fileName,
+          filePath: r.data.url,
+        };
+        updateBlock(block.id, data);
         return {
           ...block,
-          data: {
-            filename: block.data.fileName,
-            filePath: r.data.url,
-            file: undefined,
-          },
+          data,
         };
       })
     );
@@ -446,7 +461,7 @@ export default function CourseBulderProvider({
 
     console.log(content);
 
-    // const r = await execute(
+    // await execute(
     //   COURS.SAVE_CONTENT({
     //     classeId,
     //     moduleId,
@@ -494,16 +509,6 @@ export default function CourseBulderProvider({
     (id, data) => {
       dispacth({
         type: "SAVE_BLOCK",
-        payload: { id, data: deepCopyJSON(data) },
-      });
-    },
-    [dispacth]
-  );
-
-  const updateBlock = useCallback(
-    (id, data) => {
-      dispacth({
-        type: "UPDATE_BLOCK",
         payload: { id, data: deepCopyJSON(data) },
       });
     },

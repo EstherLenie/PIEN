@@ -446,3 +446,24 @@ func deleteModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
 		app.Success(c, http.StatusOK, module)
 	}
 }
+
+func deleteLessonContent(app *App, repo repository.LessonContentRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		versionId, err := app.int64(c, "versionId")
+		if err != nil {
+			return
+		}
+
+		content, err := repo.FindById(versionId)
+		if err != nil {
+			return
+		}
+
+		err = repo.Delete(versionId)
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, content)
+	}
+}

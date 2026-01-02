@@ -11,6 +11,7 @@ import (
 type fileStorage interface {
 	save(string, []byte) (string, error)
 	open(string) ([]byte, error)
+	delete(string) error
 }
 
 type localFileStorage struct {
@@ -30,10 +31,16 @@ func (lfs *localFileStorage) save(filename string, content []byte) (string, erro
 	return fullPath, nil
 }
 
-func (s *localFileStorage) open(path string) ([]byte, error) {
-	resourcePath := filepath.FromSlash(filepath.Join(s.resourcesPath, path))
+func (lfs *localFileStorage) open(path string) ([]byte, error) {
+	resourcePath := filepath.FromSlash(filepath.Join(lfs.resourcesPath, path))
 
 	return os.ReadFile(resourcePath)
+}
+
+func (lfs *localFileStorage) delete(path string) error {
+	fullPath := filepath.Join(lfs.resourcesPath, path)
+
+	return os.Remove(fullPath)
 }
 
 func newFileStorage() fileStorage {

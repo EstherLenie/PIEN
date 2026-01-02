@@ -16,6 +16,7 @@ import {
   TabList,
 } from "../../../../components/tab";
 import LeconSortList from "./sortList";
+import DeleteConfirmation from "../../../class/components/cours/deleteConfirmation";
 
 export default function Lecons() {
   const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
@@ -274,7 +275,14 @@ export default function Lecons() {
         onClose={closeSupressionModal}
         fullScreen={false}
       >
-        <form
+        <DeleteConfirmation
+          onDelete={onDelete}
+          supressionState={supressionState}
+          onChange={(e) => {
+            setSupressionState(e.target.value);
+          }}
+        />
+        {/* <form
           onSubmit={onDelete}
           className="w-120 px-4 py-4 flex flex-col items-start gap-4"
         >
@@ -300,7 +308,7 @@ export default function Lecons() {
           >
             Supprimer
           </button>
-        </form>
+        </form> */}
       </Modal>
     </>
   );

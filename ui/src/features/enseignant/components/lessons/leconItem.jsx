@@ -8,10 +8,15 @@ import CardFooter from "../../../../components/card/cardFooter";
 import Icon from "../../../../components/icon/icon";
 import COURS from "../../../../services/api/cours";
 import useApi from "../../../../hooks/api";
+import Modal from "../../../../components/modal/modal";
+import DeleteConfirmation from "../../../class/components/cours/deleteConfirmation";
 
 export default function LeconItem({ lecon }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [supressionState, setSupressionState] = useState("");
+  const [isSupressionModalOpen, setIsSupressionModalOpen] = useState(false);
+
   const menuRef = useRef(null);
   const { execute } = useApi();
   const { moduleId, classeId, leconId } = useParams();
@@ -31,10 +36,19 @@ export default function LeconItem({ lecon }) {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const openSupressionModal = () => {
+    setIsSupressionModalOpen(true);
+  };
+
+  const closeSupressionModal = () => {
+    setIsSupressionModalOpen(false);
+  };
+
   const onDelete = async () => {
     const r = await execute(
-      COURS.DELETE_LECON({ classeId, moduleId, leconId })
+      COURS.DELETE_LECON({ classeId, moduleId, leconId: lecon.id })
     );
+    closeSupressionModal();
   };
 
   return (
@@ -59,7 +73,6 @@ export default function LeconItem({ lecon }) {
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50 py-1">
               <button
                 onClick={() => {
-                  console.log("Archiver");
                   setIsMenuOpen(false);
                 }}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -68,7 +81,7 @@ export default function LeconItem({ lecon }) {
               </button>
               <button
                 onClick={() => {
-                  onDelete();
+                  openSupressionModal();
                   setIsMenuOpen(false);
                 }}
                 className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -97,6 +110,21 @@ export default function LeconItem({ lecon }) {
           Gerer
         </Button>
       </CardFooter>
+
+      <Modal
+        title="Supprimer ce module?"
+        isOpen={isSupressionModalOpen}
+        onClose={closeSupressionModal}
+        fullScreen={false}
+      >
+        <DeleteConfirmation
+          onDelete={onDelete}
+          supressionState={supressionState}
+          onChange={(e) => {
+            setSupressionState(e.target.value);
+          }}
+        />
+      </Modal>
     </Card>
   );
 }

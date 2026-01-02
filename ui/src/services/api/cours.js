@@ -151,4 +151,18 @@ COURS.DELETE_LECON = ({ classeId, moduleId, leconId }) => ({
     leconId,
 });
 
+COURS.DELETE_LECON_CONTENT = ({ classeId, moduleId, leconId, versionId }) => ({
+  method: "DELETE",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId +
+    "/versions/" +
+    versionId,
+});
+
 export default COURS;

@@ -36,6 +36,7 @@ func route(app *App) http.Handler {
 
 	router.DELETE("/cours/classes/:classId/modules/:moduleId", deleteModule(app, moduleRepository))
 	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId", deleteLesson(app, lessonsRepository))
+	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId/versions/:versionId", deleteLessonContent(app, lessonContentRepository))
 
 	return router
 }

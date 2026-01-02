@@ -7,13 +7,14 @@ import (
 type MultimediaRepository interface {
 	findByUrl(string) (MultimediaFile, error)
 	Save(f MultimediaFile) error
+	Delete(string) error
 }
 
 type GormMultimediaFileRepository struct {
 	db *gorm.DB
 }
 
-func newMultiMediaRepository(db *gorm.DB) *GormMultimediaFileRepository {
+func newMultiMediaRepository(db *gorm.DB) MultimediaRepository {
 	return &GormMultimediaFileRepository{db: db}
 }
 
@@ -26,4 +27,8 @@ func (r *GormMultimediaFileRepository) findByUrl(url string) (MultimediaFile, er
 func (r *GormMultimediaFileRepository) Save(f MultimediaFile) error {
 	result := r.db.Save(&f)
 	return result.Error
+}
+
+func (r *GormMultimediaFileRepository) Delete(url string) error {
+	return r.db.Delete(&MultimediaFile{Url: url}).Error
 }

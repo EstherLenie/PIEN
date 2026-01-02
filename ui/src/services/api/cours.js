@@ -17,7 +17,11 @@ COURS.GET_MODULES = (classeId) => ({
   url: host + "/classes/" + classeId + "/modules",
   cacheOptions: { cacheResponse: true, cacheFirst: true },
 });
-
+COURS.GET_RESSOURCES = (classeId) => ({
+  method: "GET",
+  url: host + "/classes/" + classeId + "/ressources",
+  cacheOptions: { cacheResponse: false, cacheFirst: false },
+});
 COURS.GET_MODULE = ({ classeId, moduleId }) => ({
   method: "GET",
   url: host + "/classes/" + classeId + "/modules/" + moduleId,
@@ -33,6 +37,10 @@ COURS.CREATE_MODULE = ({ classeId, data }) => ({
   method: "POST",
   url: host + "/classes/" + classeId + "/modules",
   body: data,
+});
+COURS.DELETE_RESSOURCES = ({ classeId, ressourceId }) => ({
+  method: "DELETE",
+  url: host + "/classes/" + classeId + "/ressources/" + ressourceId,
 });
 
 COURS.CREATE_LESSON = ({ classeId, moduleId, data }) => ({
@@ -51,6 +59,11 @@ COURS.SAVE_CONTENT = ({ classeId, moduleId, leconId, data }) => ({
     moduleId +
     "/lessons/" +
     leconId,
+  body: data,
+});
+COURS.SAVE_RESSOURCE = ({ classeId, data }) => ({
+  method: "POST",
+  url: host + "/classes/" + classeId + "/ressources/" + ressourceId,
   body: data,
 });
 

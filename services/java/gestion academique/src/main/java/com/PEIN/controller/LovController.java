@@ -36,7 +36,7 @@ public class LovController {
     public List<LovProjection> enseignantsByMatiere(@PathVariable Long matiereId) {
         return lovService.getEnseignantsLovByMatiere(matiereId);
     }
-    @GetMapping("/enseignants/matiere/{enseignantId}")
+    @GetMapping("/matiere/enseignants/{enseignantId}")
     public List<LovProjection> matiereByenseignants(@PathVariable Long enseignantId){
         return lovService.getMatiereLovByEnseignants(enseignantId);
     }

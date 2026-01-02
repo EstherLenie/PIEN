@@ -13,7 +13,6 @@ export default function Module() {
   const [modules, setModules] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
   const [sortedModules, setsortedModules] = useState([]);
-
   const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
   const { execute } = useApi();

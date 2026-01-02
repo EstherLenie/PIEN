@@ -385,3 +385,36 @@ func getModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
 		app.Success(c, http.StatusOK, module)
 	}
 }
+
+func listClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		classId, err := app.int64(c, "classId")
+		if err != nil {
+			return
+		}
+
+		resources, err := repo.ListClassRessources(uint64(classId))
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, resources)
+
+	}
+}
+func DeleteClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		Id, err := app.int64(c, "ressourceId")
+		if err != nil {
+			return
+		}
+
+		err = repo.DeleteRessources(uint(Id))
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, nil)
+
+	}
+}

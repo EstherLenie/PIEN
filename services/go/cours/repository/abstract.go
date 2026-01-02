@@ -20,3 +20,9 @@ type LessonRepository interface {
 	OrderLessons([]domain.Lesson) error
 	Delete(int64) error
 }
+
+type LessonContentRepository interface {
+	ListLessonContent(int64) ([]domain.ContenuLecon, error)
+	FindById(int64) (domain.ContenuLecon, error)
+	Save(*domain.ContenuLecon) error
+}

@@ -13,7 +13,7 @@ type Lesson struct {
 	Ordre              uint           `gorm:"column:ordre;not null" json:"ordre"`
 	VersionActiveID    *uint          `gorm:"column:version_active_id" json:"versionActiveId"`
 
-	ContenuLecons []ContenuLecon     `gorm:"foreignKey:LeconID" json:"versions,omitempty"`
+	ContenuLecons []*ContenuLecon    `gorm:"foreignKey:LeconID" json:"versions,omitempty"`
 	Commentaires  []CommentaireLecon `gorm:"foreignKey:LeconID" json:"commentaires,omitempty"`
 	VersionActive *ContenuLecon      `gorm:"foreignKey:VersionActiveID" json:"versionActive,omitempty"`
 }

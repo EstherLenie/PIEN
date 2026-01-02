@@ -54,11 +54,33 @@ COURS.SAVE_CONTENT = ({ classeId, moduleId, leconId, data }) => ({
   body: data,
 });
 
+COURS.NEW_CONTENT = ({ classeId, moduleId, leconId, data }) => ({
+  method: "POST",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId,
+});
+
 COURS.EDIT_MODULE = ({ classeId, moduleId, data }) => ({
   method: "PUT",
   url: host + "/classes/" + classeId + "/modules/" + moduleId,
   body: data,
 });
+
+COURS.UPLOAD_FILE = ({ classeId, leconId, moduleId, versionId, data }) => {
+  const formData = new FormData();
+  formData.append("file", data);
+
+  return {
+    url: `${host}/classes/${classeId}/modules/${moduleId}/lecons/${leconId}/versions/${versionId}/files`,
+    formData: formData,
+  };
+};
 
 COURS.GET_LECON_ACTIVE_VERSION = ({ classeId, moduleId, leconId }) => ({
   method: "GET",

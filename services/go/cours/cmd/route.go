@@ -14,6 +14,7 @@ func route(app *App) http.Handler {
 	hdrRepository := newHdrRepository(app.GetDb())
 	moduleRepository := repository.NewModuleRepository(app.GetDb())
 	lessonsRepository := repository.NewLessonRepository(app.GetDb())
+	lessonContentRepository := repository.NewLessonContentRepository(app.GetDb())
 
 	router.GET("/cours/models", listModels(app, modelRepository))
 	router.GET("/cours/models/presets", listEnvironment(app, hdrRepository))
@@ -29,6 +30,7 @@ func route(app *App) http.Handler {
 
 	router.PUT("/cours/classes/:classId/modules/:moduleId", updateModule(app, moduleRepository))
 	router.PUT("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", createLessonContent(app, lessonsRepository))
+	router.POST("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", saveNewContenuLecon(app, lessonContentRepository, lessonsRepository))
 	router.PUT("/cours/classes/:classId/modules/:moduleId/order-lessons", orderModuleLessons(app, lessonsRepository))
 	router.PUT("/cours/classes/:classId/order-modules", orderClassModules(app, moduleRepository))
 

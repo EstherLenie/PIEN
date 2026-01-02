@@ -54,6 +54,7 @@ export default function Classe() {
           <TabContent value="eleves">
             <Student />
           </TabContent>
+          <TabContent value="materiels"></TabContent>
         </TabBody>
       </Tab>
     </>

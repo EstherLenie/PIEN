@@ -1,5 +1,6 @@
 CREATE TABLE modules (
     id BIGSERIAL PRIMARY KEY,
+    classe_id bigint,
     titre VARCHAR(255) NOT NULL,
     description TEXT,
     objectifs TEXT,
@@ -7,7 +8,8 @@ CREATE TABLE modules (
     prerequis TEXT,
     ordre INT NOT NULL,
     date_creation TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    date_mise_a_jour TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    date_mise_a_jour TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
 );
 
 CREATE TABLE lecons (
@@ -49,12 +51,7 @@ ADD CONSTRAINT fk_version_active_id
 FOREIGN KEY (version_active_id) REFERENCES contenu_lecon(id) ON DELETE SET NULL;
 
 
-CREATE TABLE versions_contenu (
-    id BIGSERIAL PRIMARY KEY,
-    contenu_lecon_id BIGINT NOT NULL,
-    numero_version INT NOT NULL,
-    FOREIGN KEY (contenu_lecon_id) REFERENCES contenu_lecon(id) ON DELETE CASCADE
-);
+
 
 CREATE TABLE commentaires_lecons (
     id BIGINT PRIMARY KEY,

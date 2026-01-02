@@ -94,13 +94,7 @@ export default function LeconItem({ lecon }) {
           onClick={() => navigate(`lecons/${lecon.id}`)}
           className="flex-1 bg-primary text-white px-4 py-2 rounded-lg"
         >
-          Modifier
-        </Button>
-        <Button
-          onClick={() => navigate(`lecons/${lecon.id}`)}
-          className="flex-1 bg-gray-300 text-primary px-4 py-2 rounded-lg"
-        >
-          Visualiser
+          Gerer
         </Button>
       </CardFooter>
     </Card>

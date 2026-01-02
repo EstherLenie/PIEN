@@ -1,7 +1,17 @@
 import { createPortal } from "react-dom";
 
-export default function Modal({ isOpen, onClose, title, children }) {
-  const position = isOpen ? "translate-y-0" : "translate-y-full";
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  fullScreen = true,
+}) {
+  const position = isOpen
+    ? fullScreen
+      ? "translate-y-0"
+      : "-translate-y-[50%] top-[50%] left-[50%]"
+    : "translate-y-full";
   const display = isOpen ? "flex" : "hidden";
 
   return createPortal(
@@ -10,10 +20,14 @@ export default function Modal({ isOpen, onClose, title, children }) {
         className={`fixed ${display} h-dvh bg-gray-900 z-40 w-full top-0 opacity-80`}
       ></div>
       <div
-        className={`fixed bottom-0 w-full h-[90%] z-50 flex items-end transition-all duration-300 justify-center ${position}`}
+        className={`fixed bottom-0  ${
+          fullScreen
+            ? `w-full h-[90%] rounded-t-xl`
+            : "-translate-x-[50%] h-fit  rounded-xl overflow-hidden"
+        } z-50 flex items-end transition-all duration-300 justify-center ${position}`}
       >
         <div
-          className="bg-white h-full max-h-full rounded-t-xl shadow-lg flex-1 flex flex-col w-full  animate-fade-in"
+          className="bg-white h-full max-h-full   shadow-lg flex-1 flex flex-col w-full  animate-fade-in"
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"

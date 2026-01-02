@@ -11,9 +11,10 @@ import {
   TabList,
 } from "../../components/tab";
 import COURS from "../../services/api/cours";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import Versions from "../../features/enseignant/components/lessons/leconVersions";
 import Pen from "../../assets/icons/pen.svg?react";
+import Icon from "../../components/icon/icon";
 
 function LeconDescription({ description, titre, onEdit }) {
   return (
@@ -76,6 +77,16 @@ export default function Lecon() {
           />
         </Loader>
       </section>
+      <section className="flex justify-end items-center my-4">
+        <NavLink
+          to={`/enseignant/classes/${classeId}/modules/${moduleId}/lecons/${leconId}/editer-contenu`}
+          className="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-md hover:bg-green-700 transition"
+        >
+          <Icon name="plus" className="w-4 h-4" />
+          Editer le contenu
+        </NavLink>
+      </section>
+
       <aside>
         <Modal isOpen={isModalOpen} onClose={closeModal} title="Editer Lecon">
           <Loader promise={lecon}>

@@ -11,7 +11,8 @@ func route(app *App) http.Handler {
 	multiMediaRepository := newMultiMediaRepository(app.db)
 	storage := newFileStorage()
 
-	router.GET("/multimedia/:url", GetFileByIdHandler(app, multiMediaRepository, storage))
+	router.GET("/multimedia/:url", GetFileHandler(app, multiMediaRepository, storage))
+	router.POST("/multimedia", SaveFileHandler(app, multiMediaRepository, storage))
 
 	return router
 }

@@ -130,6 +130,25 @@ func getLessonVersion(app *App, repo repository.LessonRepository) gin.HandlerFun
 	}
 }
 
+func saveNewContenuLecon(app *App, contentRepo repository.LessonContentRepository, lessonRepo repository.LessonRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		leconId, err := app.int64(c, "leconId")
+		lecon, err := lessonRepo.GetById(leconId)
+		if err != nil {
+			return
+		}
+
+		lessonContent := domain.ContenuLecon{LeconID: lecon.ID}
+		err = contentRepo.Save(&lessonContent)
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, lessonContent.ID)
+
+	}
+}
+
 func createLessonContent(app *App, repo repository.LessonRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		leconId, err := app.int64(c, "leconId")
@@ -145,7 +164,7 @@ func createLessonContent(app *App, repo repository.LessonRepository) gin.Handler
 		}
 
 		lessonContent := domain.ContenuLecon{LeconID: lecon.ID, Contenu: contentReceived.Contenu, ID: uint(contentReceived.Id)}
-		lecon.ContenuLecons = append(lecon.ContenuLecons, lessonContent)
+		lecon.ContenuLecons = append(lecon.ContenuLecons, &lessonContent)
 		lecon.Titre = contentReceived.Titre
 		lecon.Description = contentReceived.Description
 
@@ -154,7 +173,7 @@ func createLessonContent(app *App, repo repository.LessonRepository) gin.Handler
 			return
 		}
 
-		app.Success(c, http.StatusOK, lecon)
+		app.Success(c, http.StatusOK, lessonContent.ID)
 	}
 }
 

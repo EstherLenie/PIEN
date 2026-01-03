@@ -31,5 +31,11 @@ public interface MatiereRepository extends JpaRepository<Matiere,Long> {
         """, nativeQuery = true)
         List<LovProjection> findEnseignantsLovByMatiere(@Param("matiereId") Long matiereId);
 
+@Query (value = """
+    SELECT m.code as code ,m.nom as description
+    FROM sga.matiere m, UNNEST(enseignants) AS id1
+    WHERE id1 = :enseignantId
+""", nativeQuery = true)
+List<LovProjection> findMatiereLovByEnseignant(@Param("enseignantId") Long enseignantId);
 
 }

@@ -69,10 +69,11 @@ public class ClasseController {
         classeService.deleteFromClasse(classeId,eleveId);
     }
     @DeleteMapping("/delete/{classeId}")
-    public void deleteClasse(
-            @PathVariable Long id
-    ){
-        classeService.deleteClass(id);
+    public void deleteClasse
+            (
+            @PathVariable Long classeId)
+    {
+        classeService.deleteClass(classeId);
     }
 }
 

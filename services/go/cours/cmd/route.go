@@ -14,6 +14,7 @@ func route(app *App) http.Handler {
 	hdrRepository := newHdrRepository(app.GetDb())
 	moduleRepository := repository.NewModuleRepository(app.GetDb())
 	lessonsRepository := repository.NewLessonRepository(app.GetDb())
+	ressourceRepository := repository.NewRessourceRepository(app.GetDb())
 	lessonContentRepository := repository.NewLessonContentRepository(app.GetDb())
 
 	router.GET("/cours/models", listModels(app, modelRepository))
@@ -24,6 +25,7 @@ func route(app *App) http.Handler {
 	router.GET("/cours/classes/:classId/modules/:moduleId/lessons/:leconId/gerer", getLessonActiveVersion(app, lessonsRepository))
 	router.GET("/cours/classes/:classId/modules", listClassModules(app, moduleRepository))
 	router.GET("/cours/classes/:classId/modules/:moduleId", getModule(app, moduleRepository))
+	router.GET("/cours/classes/:classId/ressources", listClassResources(app, ressourceRepository))
 
 	router.POST("/cours/classes/:classId/modules", createModule(app, moduleRepository))
 	router.POST("/cours/classes/:classId/modules/:moduleId", createLesson(app, lessonsRepository))
@@ -33,6 +35,7 @@ func route(app *App) http.Handler {
 	router.POST("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", saveNewContenuLecon(app, lessonContentRepository, lessonsRepository))
 	router.PUT("/cours/classes/:classId/modules/:moduleId/order-lessons", orderModuleLessons(app, lessonsRepository))
 	router.PUT("/cours/classes/:classId/order-modules", orderClassModules(app, moduleRepository))
+	router.DELETE("/cours/classes/:classId/ressources/:ressourceId", DeleteClassResources(app, ressourceRepository))
 
 	router.DELETE("/cours/classes/:classId/modules/:moduleId", deleteModule(app, moduleRepository))
 	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId", deleteLesson(app, lessonsRepository))

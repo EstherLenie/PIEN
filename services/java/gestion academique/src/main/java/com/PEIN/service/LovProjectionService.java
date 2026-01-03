@@ -33,4 +33,8 @@ public class LovProjectionService {
     public List<LovProjection> getEnseignantsLovByMatiere(Long matiereId) {
         return matiereRepository.findEnseignantsLovByMatiere(matiereId);
     }
+    public List<LovProjection> getMatiereLovByEnseignants(Long enseignantId) {
+        return matiereRepository.findMatiereLovByEnseignant(enseignantId);
+    }
+
 }

@@ -11,6 +11,7 @@ import Loader from "../../components/loader/loader";
 import ClasseDescription from "./classeDescription";
 import Module from "./module";
 import Student from "./student";
+import Ressources from "./ressources";
 
 export default function Classe() {
   const { classe } = useLoaderData();
@@ -54,7 +55,9 @@ export default function Classe() {
           <TabContent value="eleves">
             <Student />
           </TabContent>
-          <TabContent value="materiels"></TabContent>
+          <TabContent value="materiels">
+            <Ressources />
+          </TabContent>
         </TabBody>
       </Tab>
     </>

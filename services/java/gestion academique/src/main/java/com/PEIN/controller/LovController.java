@@ -3,6 +3,7 @@ package com.PEIN.controller;
 import com.PEIN.projection.LovProjection;
 import com.PEIN.service.LovProjectionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,10 @@ public class LovController {
     @GetMapping("/enseignants/matiere/{matiereId}")
     public List<LovProjection> enseignantsByMatiere(@PathVariable Long matiereId) {
         return lovService.getEnseignantsLovByMatiere(matiereId);
+    }
+    @GetMapping("/matiere/enseignants/{enseignantId}")
+    public List<LovProjection> matiereByenseignants(@PathVariable Long enseignantId){
+        return lovService.getMatiereLovByEnseignants(enseignantId);
     }
 }
 

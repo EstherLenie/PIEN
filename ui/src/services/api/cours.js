@@ -67,11 +67,33 @@ COURS.SAVE_RESSOURCE = ({ classeId, data }) => ({
   body: data,
 });
 
+COURS.NEW_CONTENT = ({ classeId, moduleId, leconId, data }) => ({
+  method: "POST",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId,
+});
+
 COURS.EDIT_MODULE = ({ classeId, moduleId, data }) => ({
   method: "PUT",
   url: host + "/classes/" + classeId + "/modules/" + moduleId,
   body: data,
 });
+
+COURS.UPLOAD_FILE = ({ classeId, leconId, moduleId, versionId, data }) => {
+  const formData = new FormData();
+  formData.append("file", data);
+
+  return {
+    url: `${host}/classes/${classeId}/modules/${moduleId}/lecons/${leconId}/versions/${versionId}/files`,
+    formData: formData,
+  };
+};
 
 COURS.GET_LECON_ACTIVE_VERSION = ({ classeId, moduleId, leconId }) => ({
   method: "GET",
@@ -123,6 +145,23 @@ COURS.SORT_MODULES = ({ classeId, data }) => ({
   method: "PUT",
   url: host + "/classes/" + classeId + "/order-modules",
   body: data,
+});
+
+COURS.DELETE_MODULE = ({ classeId, moduleId }) => ({
+  method: "DELETE",
+  url: host + "/classes/" + classeId + "/modules/" + moduleId,
+});
+
+COURS.DELETE_LECON = ({ classeId, moduleId, leconId }) => ({
+  method: "DELETE",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId,
 });
 
 export default COURS;

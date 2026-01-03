@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type fileStorage interface {
-	save([]byte) (string, error)
+	save(string, []byte) (string, error)
 	open(string) ([]byte, error)
 }
 
@@ -16,8 +17,17 @@ type localFileStorage struct {
 	resourcesPath string
 }
 
-func (s *localFileStorage) save(content []byte) (string, error) {
-	return "", nil
+func (lfs *localFileStorage) save(filename string, content []byte) (string, error) {
+	if err := os.MkdirAll(lfs.resourcesPath, os.ModePerm); err != nil {
+		return "", fmt.Errorf("cannot create storage folder: %w", err)
+	}
+
+	fullPath := filepath.Join(lfs.resourcesPath, filename)
+
+	if err := os.WriteFile(fullPath, content, 0644); err != nil {
+		return "", fmt.Errorf("cannot write file: %w", err)
+	}
+	return fullPath, nil
 }
 
 func (s *localFileStorage) open(path string) ([]byte, error) {

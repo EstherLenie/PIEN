@@ -8,6 +8,7 @@ type ModuleRepository interface {
 	Save(*domain.Module) error
 	GetById(int64) (domain.Module, error)
 	SortModules([]domain.Module) error
+	Delete(int64) error
 }
 
 type LessonRepository interface {
@@ -17,4 +18,11 @@ type LessonRepository interface {
 	GetActiveVersion(int64) (domain.Lesson, error)
 	GetLeconVersion(leconId, versionId int64) (domain.Lesson, error)
 	OrderLessons([]domain.Lesson) error
+	Delete(int64) error
+}
+
+type LessonContentRepository interface {
+	ListLessonContent(int64) ([]domain.ContenuLecon, error)
+	FindById(int64) (domain.ContenuLecon, error)
+	Save(*domain.ContenuLecon) error
 }

@@ -22,6 +22,7 @@ import Lecon from "../pages/enseignant/lecon";
 import GestionnaireMainLayout from "../layouts/gestionnaire/gestionnaireMainLayout";
 import GestionnaireClasseDashboard from "../pages/gestionnaire/gestionnaireClasseDashboard";
 import GestionnaireClasseLayout from "../layouts/gestionnaire/gestionnaireClasseLayout";
+import newLeconLoader from "../loaders/enseignant/newLessonLoader";
 
 export default createBrowserRouter([
   {
@@ -103,7 +104,8 @@ export default createBrowserRouter([
         element: <Cours />,
       },
       {
-        path: "enseignant/classes/:classeId/modules/:moduleId/lecons/new",
+        path: "enseignant/classes/:classeId/modules/:moduleId/lecons/:leconId/editer-contenu",
+        loader: newLeconLoader,
         element: <Cours />,
       },
       {

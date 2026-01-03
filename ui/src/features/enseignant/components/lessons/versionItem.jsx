@@ -1,16 +1,20 @@
 import { useState, useRef, useEffect } from "react"; // Ajout de hooks
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../../../components/button/button";
 import Card from "../../../../components/card/card";
 import CardBody from "../../../../components/card/cardBody";
 import CardHeader from "../../../../components/card/cardHeader";
 import CardFooter from "../../../../components/card/cardFooter";
 import Icon from "../../../../components/icon/icon";
+import useApi from "../../../../hooks/api";
+import COURS from "../../../../services/api/cours";
 
 export default function VersionItem({ version, isActive = false }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { moduleId, classeId, leconId } = useParams();
+  const { execute } = useApi();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -25,6 +29,12 @@ export default function VersionItem({ version, isActive = false }) {
   const toggleMenu = (e) => {
     e.stopPropagation();
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const onDelete = async () => {
+    const r = await execute(
+      COURS.DELETE_LECON({ moduleId, classeId, leconId })
+    );
   };
 
   return (
@@ -61,6 +71,7 @@ export default function VersionItem({ version, isActive = false }) {
               )}
               <button
                 onClick={() => {
+                  onDelete();
                   console.log("Supprimer");
                   setIsMenuOpen(false);
                 }}

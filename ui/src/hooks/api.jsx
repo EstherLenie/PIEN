@@ -50,5 +50,36 @@ export default function useApi() {
     }
   };
 
-  return { execute, requestState };
+  const download = async (config) => {
+    let result;
+
+    try {
+      const res = await fetch(config.url);
+      const blob = await res.blob();
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = config.filename;
+      a.click();
+
+      URL.revokeObjectURL(url);
+    } catch (e) {}
+  };
+
+  const uploadFile = async ({ url, formData }) => {
+    const res = await fetch(url, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error("Upload failed");
+    }
+
+    return res.json();
+  };
+
+  return { execute, download, requestState, uploadFile };
 }

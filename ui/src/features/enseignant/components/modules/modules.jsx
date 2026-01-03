@@ -3,10 +3,16 @@ import ModuleItem from "./moduleItem";
 
 import Icon from "../../../../components/icon/icon";
 import { useEffect, useRef, useState } from "react";
+import Modal from "../../../../components/modal/modal";
+import useApi from "../../../../hooks/api";
+import { useParams } from "react-router-dom";
+import COURS from "../../../../services/api/cours";
 
 export default function Modules({ data: modules, onNew, onSearch, onSort }) {
   const [isMenuOpen, setIsMenuOpen] = useState();
+
   const menuRef = useRef();
+  const { classeId, moduleId } = useParams();
 
   const toggleMenu = () => {
     setIsMenuOpen((s) => !s);
@@ -53,15 +59,6 @@ export default function Modules({ data: modules, onNew, onSearch, onSort }) {
                     className="flex items-center w-full px-4 py-2 text-sm text-green-600 hover:bg-red-50"
                   >
                     <Icon name="trash" className="w-4 h-4 mr-2" /> Organiser
-                  </button>
-                  <button
-                    onClick={() => {
-                      console.log("Supprimer");
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    <Icon name="trash" className="w-4 h-4 mr-2" /> Supprimer
                   </button>
                 </div>
               )}

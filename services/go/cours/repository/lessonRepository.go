@@ -62,3 +62,9 @@ func (r *appLessonRepository) GetLeconVersion(lessonId, versionId int64) (domain
 	}).Find(&lesson, lessonId)
 	return lesson, result.Error
 }
+
+func (r *appLessonRepository) Delete(lessonId int64) error {
+	lesson := domain.Lesson{BaseModel: domain.BaseModel{ID: uint(lessonId)}}
+
+	return r.db.Delete(&lesson).Error
+}

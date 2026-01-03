@@ -9,10 +9,14 @@ import {
 } from "react";
 import { boxArgument, storage } from "../features/class/utils/utils";
 import ResourceChoser from "../features/class/components/organizer/resourceChoser";
-import { deepCopyJSON, id } from "../utils/utils";
+import { base64ToBlob, deepCopyJSON, id } from "../utils/utils";
 import { useLoaderData, useParams } from "react-router-dom";
 import useApi from "../hooks/api";
 import COURS from "../services/api/cours";
+import MULTIMEDIA from "../services/api/multimedia";
+
+const isFileComponent = (c) =>
+  ["image", "audio", "video", "document"].includes(c);
 
 export const courseBuilderContext = createContext({
   content: [],
@@ -319,6 +323,12 @@ const reducer = (state, action) => {
         description: action.payload,
       };
       break;
+    case "EDIT_VERSION":
+      newState = {
+        ...state,
+        versionId: action.payload,
+      };
+      break;
     default:
       return state;
   }
@@ -356,7 +366,7 @@ export default function CourseBulderProvider({
   const [course, dispacth] = useReducer(reducer, initialCourse);
   const [chooserOpened, setChoserOpened] = useState(null);
   const [descriptionOpen, setDescriptionOpen] = useState(false);
-  const { execute } = useApi();
+  const { execute, uploadFile } = useApi();
   const { leconId, classeId, moduleId } = useParams();
 
   const closeChooser = () => {
@@ -383,21 +393,67 @@ export default function CourseBulderProvider({
       blocks,
       versionId,
     } = course;
+
+    let contentId = versionId;
+    if (!versionId) {
+      const r = await execute(
+        COURS.NEW_CONTENT({ classeId, moduleId, leconId })
+      );
+      if (r.error) {
+        return;
+      }
+      dispacth({ type: "EDIT_VERSION", payload: r.data });
+      contentId = r.data;
+    }
+
+    const updatedBlocks = await Promise.all(
+      blocks.map(async (block) => {
+        if (!isFileComponent(block.component)) {
+          return block;
+        }
+
+        if (block.data.filePath) {
+          return block;
+        }
+
+        const blob = base64ToBlob(block.data.content);
+
+        const r = await uploadFile(
+          MULTIMEDIA.UPLOAD_FILE({ file: blob, filename: block.data.fileName })
+        );
+
+        if (r.error) {
+          throw new Error("File upload failed");
+        }
+
+        return {
+          ...block,
+          data: {
+            filename: block.data.fileName,
+            filePath: r.data.url,
+            file: undefined,
+          },
+        };
+      })
+    );
+
     const content = {
       description,
       titre,
-      contenu: blocks.filter((b) => b.component != "new"),
-      id: versionId,
+      contenu: updatedBlocks.filter((b) => b.component !== "new"),
+      id: contentId,
     };
 
-    const r = await execute(
-      COURS.SAVE_CONTENT({
-        classeId,
-        moduleId,
-        leconId,
-        data: content,
-      })
-    );
+    console.log(content);
+
+    // const r = await execute(
+    //   COURS.SAVE_CONTENT({
+    //     classeId,
+    //     moduleId,
+    //     leconId,
+    //     data: content,
+    //   })
+    // );
   }, [course]);
 
   const deleteBox = useCallback(

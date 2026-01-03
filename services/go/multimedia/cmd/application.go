@@ -37,6 +37,10 @@ func (a *App) Success(c *gin.Context, code int, data interface{}) {
 	c.JSON(code, response)
 }
 
+func (a *App) file(c *gin.Context, code int, contentType string, data []byte) {
+	c.Data(code, contentType, data)
+}
+
 type AppBuilder struct {
 	databaseEngine string
 	dsn            string

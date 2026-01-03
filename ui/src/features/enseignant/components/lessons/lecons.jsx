@@ -22,6 +22,8 @@ export default function Lecons() {
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [filteredLessons, setFilteredLessons] = useState([]);
+  const [supressionState, setSupressionState] = useState("");
+  const [isSupressionModalOpen, setIsSupressionModalOpen] = useState(false);
   const [sortedLessons, setSortedLessons] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef();
@@ -41,6 +43,14 @@ export default function Lecons() {
     setLessons(r.data || []);
     setFilteredLessons(r.data || []);
     setSortedLessons(r.data || []);
+  };
+
+  const openSupressionModal = () => {
+    setIsSupressionModalOpen(true);
+  };
+
+  const closeSupressionModal = () => {
+    setIsSupressionModalOpen(false);
   };
 
   const openMetadataModal = () => {
@@ -114,6 +124,18 @@ export default function Lecons() {
     );
   };
 
+  const onDelete = async (e) => {
+    e.preventDefault();
+    if (supressionState !== "confirmer") {
+      return;
+    }
+    const r = await execute(COURS.DELETE_MODULE({ classeId, moduleId }));
+    if (r.error) {
+      return;
+    }
+    closeSupressionModal();
+  };
+
   useEffect(() => {
     loadLessons();
   }, []);
@@ -162,7 +184,7 @@ export default function Lecons() {
                   </button>
                   <button
                     onClick={() => {
-                      console.log("Supprimer");
+                      openSupressionModal();
                       setIsMenuOpen(false);
                     }}
                     className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -244,6 +266,41 @@ export default function Lecons() {
           setLecons={setSortedLessons}
           onSort={onSort}
         />
+      </Modal>
+
+      <Modal
+        title="Supprimer ce module?"
+        isOpen={isSupressionModalOpen}
+        onClose={closeSupressionModal}
+        fullScreen={false}
+      >
+        <form
+          onSubmit={onDelete}
+          className="w-120 px-4 py-4 flex flex-col items-start gap-4"
+        >
+          <label htmlFor="delete" className="">
+            Veuillez confirmer la suppression. Tapez{" "}
+            <span className="italic text-gray-500">"confirmer"</span> dans le
+            champs de texte ci-dessous.
+          </label>
+          <input
+            id="delete"
+            type="text"
+            placeholder="confirmer"
+            value={supressionState}
+            onChange={(e) => {
+              setSupressionState(e.target.value);
+            }}
+            className="border w-full rounded-sm p-2"
+          />
+          <button
+            disabled={supressionState !== "confirmer"}
+            type="submit"
+            className="bg-red-500 text-white py-2 px-4 rounded-sm disabled:cursor-not-allowed disabled:bg-red-200"
+          >
+            Supprimer
+          </button>
+        </form>
       </Modal>
     </>
   );

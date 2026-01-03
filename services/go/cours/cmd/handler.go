@@ -130,6 +130,25 @@ func getLessonVersion(app *App, repo repository.LessonRepository) gin.HandlerFun
 	}
 }
 
+func saveNewContenuLecon(app *App, contentRepo repository.LessonContentRepository, lessonRepo repository.LessonRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		leconId, err := app.int64(c, "leconId")
+		lecon, err := lessonRepo.GetById(leconId)
+		if err != nil {
+			return
+		}
+
+		lessonContent := domain.ContenuLecon{LeconID: lecon.ID}
+		err = contentRepo.Save(&lessonContent)
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, lessonContent.ID)
+
+	}
+}
+
 func createLessonContent(app *App, repo repository.LessonRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		leconId, err := app.int64(c, "leconId")
@@ -145,7 +164,7 @@ func createLessonContent(app *App, repo repository.LessonRepository) gin.Handler
 		}
 
 		lessonContent := domain.ContenuLecon{LeconID: lecon.ID, Contenu: contentReceived.Contenu, ID: uint(contentReceived.Id)}
-		lecon.ContenuLecons = append(lecon.ContenuLecons, lessonContent)
+		lecon.ContenuLecons = append(lecon.ContenuLecons, &lessonContent)
 		lecon.Titre = contentReceived.Titre
 		lecon.Description = contentReceived.Description
 
@@ -154,7 +173,7 @@ func createLessonContent(app *App, repo repository.LessonRepository) gin.Handler
 			return
 		}
 
-		app.Success(c, http.StatusOK, lecon)
+		app.Success(c, http.StatusOK, lessonContent.ID)
 	}
 }
 
@@ -389,32 +408,62 @@ func getModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
 func listClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		classId, err := app.int64(c, "classId")
-		if err != nil {
+			if err != nil {
 			return
 		}
-
 		resources, err := repo.ListClassRessources(uint64(classId))
+		app.Success(c, http.StatusOK, resources)
+	}}
+
+func deleteLesson(app *App, repo repository.LessonRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		lessonId, err := app.int64(c, "lessonId")
 		if err != nil {
 			return
 		}
-
-		app.Success(c, http.StatusOK, resources)
+		lesson, err := repo.GetById(lessonId)
+		err = repo.Delete(lessonId)
+		if err != nil {
+			return
+		}
+		app.Success(c, http.StatusOK, lesson)
+		
 
 	}
 }
 func DeleteClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		Id, err := app.int64(c, "ressourceId")
-		if err != nil {
+				if err != nil {
 			return
 		}
-
 		err = repo.DeleteRessources(uint(Id))
+			if err != nil {
+			return
+		}
+		app.Success(c, http.StatusOK, Id)
+
+		
+	}
+}
+
+func deleteModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		moduleId, err := app.int64(c, "moduleId")
 		if err != nil {
 			return
 		}
 
-		app.Success(c, http.StatusOK, nil)
+		module, err := repo.GetById(moduleId)
+		if err != nil {
+			return
+		}
 
+		err = repo.Delete(moduleId)
+		if err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, module)
 	}
 }

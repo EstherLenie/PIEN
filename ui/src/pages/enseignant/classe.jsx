@@ -56,7 +56,7 @@ export default function Classe() {
             <Student />
           </TabContent>
           <TabContent value="materiels">
-            <Ressources/>
+            <Ressources />
           </TabContent>
         </TabBody>
       </Tab>

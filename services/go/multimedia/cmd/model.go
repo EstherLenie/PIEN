@@ -11,3 +11,7 @@ type MultimediaFile struct {
 	CreeLe   time.Time `json:"creeLe"`
 	CreePar  int       `json:"-"`
 }
+
+func (MultimediaFile) TableName() string {
+	return "multimedia_file"
+}

@@ -54,3 +54,9 @@ func (r *appModuleRepository) SortModules(modules []domain.Module) error {
 		return nil
 	})
 }
+
+func (r *appModuleRepository) Delete(moduleId int64) error {
+	module := domain.Module{BaseModel: domain.BaseModel{ID: uint(moduleId)}}
+
+	return r.db.Delete(&module).Error
+}

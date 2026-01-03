@@ -26,14 +26,19 @@ export const sendRequest = async ({
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
 
-  const responseData = await response.json();
+  const contentType = response.headers.get("content-type") || "";
 
-  if (!response.ok) {
-    return { ok: false, errorData: responseData, code: response.status };
+  if (contentType.includes("application/json")) {
+    const responseData = await response.json();
+    if (!response.ok) {
+      return { ok: false, errorData: responseData, code: response.status };
+    }
+    if (cacheOptions.cacheResponse) {
+      cacheInstance.set(url, responseData.data);
+    }
+    return { ok: true, body: responseData.data };
+  } else {
+    const blob = await response.blob();
+    return { ok: true, body: blob };
   }
-
-  if (cacheOptions.cacheResponse) {
-    cacheInstance.set(url, responseData.data);
-  }
-  return { ok: true, body: responseData.data };
 };

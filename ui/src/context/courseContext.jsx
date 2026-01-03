@@ -432,7 +432,7 @@ export default function CourseBulderProvider({
         const r = await uploadFile(
           MULTIMEDIA.UPLOAD_FILE({
             file: blob,
-            filename: block.data.fileName,
+            filename: block.data.filename,
           })
         );
 
@@ -441,7 +441,7 @@ export default function CourseBulderProvider({
         }
 
         const data = {
-          filename: block.data.fileName,
+          filename: block.data.filename,
           filePath: r.data.url,
         };
         updateBlock(block.id, data);

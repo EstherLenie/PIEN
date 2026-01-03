@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import Icon from "../../../../components/icon/icon";
 import { base64ToBlob } from "../../../../utils/utils";
+import MULTIMEDIA from "../../../../services/api/multimedia";
+import useApi from "../../../../hooks/api";
 
 const types = [
   ".pdf",
@@ -19,11 +21,12 @@ export default function DocumentPicker({
   allowedTypes = types,
 }) {
   const inputRef = useRef();
+  const { execute } = useApi();
   const iconName = data
-    ? data.fileName.split(".").pop().toLowerCase().substring(0, 3)
+    ? data.filename.split(".").pop().toLowerCase().substring(0, 3)
     : "";
 
-  let objectUrl = null;
+  let objectUrl = useRef();
 
   /**
    *
@@ -37,7 +40,7 @@ export default function DocumentPicker({
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result;
-      save({ fileName: file.name, mimeType: file.type, content: result });
+      save({ filename: file.name, mimeType: file.type, content: result });
     };
     reader.readAsDataURL(file);
   };
@@ -58,21 +61,35 @@ export default function DocumentPicker({
   };
 
   const handlePreview = () => {
-    if (!objectUrl) return;
-    window.open(objectUrl, "_blank");
+    if (!objectUrl.current) return;
+    window.open(objectUrl.current, "_blank");
   };
 
-  useEffect(() => {
+  const loadFile = async () => {
     if (!data) {
       return;
     }
+    debugger;
+    let blob;
+    if (data.content) {
+      blob = base64ToBlob(data.content);
+    } else if (data.filePath) {
+      blob = await execute({ url: MULTIMEDIA.GET_FILE(data.filePath) });
+    }
 
-    const blob = base64ToBlob(data.content);
-    objectUrl = URL.createObjectURL(blob);
+    if (!blob?.data) {
+      return;
+    }
+
+    objectUrl.current = URL.createObjectURL(blob.data);
 
     return () => {
-      URL.revokeObjectURL(objectUrl);
+      URL.revokeObjectURL(objectUrl.current);
     };
+  };
+
+  useEffect(() => {
+    loadFile();
   }, [data]);
 
   return (
@@ -103,7 +120,7 @@ export default function DocumentPicker({
         <div className="w-full flex flex-col items-center gap-2">
           <Icon name={iconName} className="w-10" />
           <p className="text-sm text-gray-700 font-medium text-center truncate w-full">
-            {data.fileName}
+            {data.filename}
           </p>
           <div className="flex justify-center space-x-4 bg-blue-400 rounded-sm mb-3 w-20 h-5 m-auto">
             <Icon

@@ -71,10 +71,9 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 		}
 
 		contentType := http.DetectContentType(content)
-
 		url := uuid.NewString() + filepath.Ext(file.Filename)
 
-		path, err := storage.save(url, content)
+		path, err := storage.save(file.Filename, content)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "cannot save file",

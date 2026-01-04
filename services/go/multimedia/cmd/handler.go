@@ -69,9 +69,9 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 
 		contentType := http.DetectContentType(content)
 
-		url := uuid.NewString() + filepath.Ext(file.Filename)
+		url := uuid.NewString() + filepath.Ext(file.Filename) // creation url
 
-		path, err := storage.save(url, content)
+		path, err := storage.save(url, content) // creation de chemin sur le disque
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "cannot save file",
@@ -94,8 +94,8 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 			return
 		}
 
-		app.cache.Put(multimedia.Url, content)
-		app.Success(ctx, http.StatusOK, map[string]string{"url": multimedia.Url})
+		app.cache.Put(multimedia.Url, content) //met en cache
+		app.Success(ctx, http.StatusOK, map[string]string{"url": multimedia.Url, "type": multimedia.Type})
 
 	}
 }

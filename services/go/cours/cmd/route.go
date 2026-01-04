@@ -29,6 +29,7 @@ func route(app *App) http.Handler {
 
 	router.POST("/cours/classes/:classId/modules", createModule(app, moduleRepository))
 	router.POST("/cours/classes/:classId/modules/:moduleId", createLesson(app, lessonsRepository))
+	router.POST("/cours/classes/:classId/ressources", addRessources(app, ressourceRepository))
 
 	router.PUT("/cours/classes/:classId/modules/:moduleId", updateModule(app, moduleRepository))
 	router.PUT("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", createLessonContent(app, lessonsRepository))

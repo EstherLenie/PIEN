@@ -8,6 +8,8 @@ import COURS from "../../services/api/cours";
 import useApi from "../../hooks/api";
 import Input from "@mui/material/Input";
 import AddRessourceForm from "../../features/class/components/cours/addRessourcesForm";
+import MULTIMEDIA from "../../services/api/multimedia";
+import { formatMimeType } from "../../utils/utils";
 export default function Ressources() {
   const { classe } = useLoaderData();
   const [ressource, setRessource] = useState([]);
@@ -21,7 +23,7 @@ export default function Ressources() {
   const [error, setError] = useState(null);
   const { classeId } = useParams();
 
-  const { execute } = useApi();
+  const { execute, download } = useApi();
 
   const load = async () => {
     const r = await execute(COURS.GET_RESSOURCES(classeId));
@@ -32,7 +34,10 @@ export default function Ressources() {
     setFilteredRessource(r.data);
     setLoading(false);
   };
-
+  const onAddSuccess = (r) => {
+    setFilteredRessource((s) => [...s, r]);
+    setRessource((s) => [...s, r]);
+  };
   useEffect(() => {
     load();
   }, [count]);
@@ -41,6 +46,13 @@ export default function Ressources() {
     alert(`La ressource ${ressourceTitre} va etre supprimee`);
     await execute(COURS.DELETE_RESSOURCES({ classeId, ressourceId }));
     setCount((prev) => prev + 1);
+  };
+  const handleDownload = async ({ url, filename, type }) => {
+    if (type === "URL") {
+      window.open(url);
+      return;
+    }
+    await download(MULTIMEDIA.DOWNLOAD({ url, filename }));
   };
 
   const toggleMenu = () => {
@@ -119,6 +131,22 @@ export default function Ressources() {
       <line x1="14" y1="11" x2="14" y2="17" />
     </svg>
   );
+  const IconRedirect = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="green"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10 13a5 5 0 0 0 7.54-.54l2-2a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.54.54l-2 2a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+    </svg>
+  );
 
   return (
     <>
@@ -177,6 +205,7 @@ export default function Ressources() {
         <AddRessourceForm
           classeId={classeId}
           closeMedatadaModal={closeMedatadaModal}
+          onAddSuccess={onAddSuccess}
         />
       </Modal>
 
@@ -235,16 +264,26 @@ export default function Ressources() {
                     {ressource.description}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {ressource.type}
+                    {formatMimeType(ressource.type)}
                   </td>
                   <td className="px-4 py-2 text-center flex justify-center gap-2">
                     {/* Boutons visuels pour prototype */}
-                    <div
-                      onClick={() => alert(`Telecharger ${ressource.titre}`)}
-                      className="text-gray-400 space-y-2 hover:text-blue-600 p-1 rounded-full  hover:scale-110 transition-colors"
+                    <button
+                      onClick={() =>
+                        handleDownload({
+                          url: ressource.url,
+                          filename: ressource.filename,
+                          type: ressource.type,
+                        })
+                      }
+                      className="text-gray-400 space-y-2 hover:text-blue-600 p-1 rounded-full  hover:scale-110 transition-colors "
                     >
-                      <IconDownload stroke="green" />
-                    </div>
+                      {ressource.type === "URL" ? (
+                        <IconRedirect />
+                      ) : (
+                        <IconDownload stroke="green" />
+                      )}
+                    </button>
                     <div
                       // onClick={() => alert(`Supprimer la classe ${classe.nom}`)}
                       onClick={() =>

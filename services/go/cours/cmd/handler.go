@@ -3,6 +3,7 @@ package main
 import (
 	"PIEN/cours/domain"
 	"PIEN/cours/repository"
+	"PIEN/cours/service"
 	"PIEN/cours/validator"
 	"context"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/datatypes"
 )
 
 func listModels(app *App, repo *GlbModelRepository) gin.HandlerFunc {
@@ -149,31 +151,80 @@ func saveNewContenuLecon(app *App, contentRepo repository.LessonContentRepositor
 	}
 }
 
-func createLessonContent(app *App, repo repository.LessonRepository) gin.HandlerFunc {
+func createLessonContent(
+	app *App,
+	lessonRepo repository.LessonRepository,
+	contentRepo repository.LessonContentRepository,
+	mediaClient service.MediaClient,
+) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
 		leconId, err := app.int64(c, "leconId")
-		lecon, err := repo.GetById(leconId)
 		if err != nil {
 			return
 		}
 
-		var contentReceived Lesson
-		err = c.BindJSON(&contentReceived)
+		lesson, err := lessonRepo.GetById(leconId)
 		if err != nil {
 			return
 		}
 
-		lessonContent := domain.ContenuLecon{LeconID: lecon.ID, Contenu: contentReceived.Contenu, ID: uint(contentReceived.Id)}
-		lecon.ContenuLecons = append(lecon.ContenuLecons, &lessonContent)
-		lecon.Titre = contentReceived.Titre
-		lecon.Description = contentReceived.Description
+		var payload struct {
+			Contenu     datatypes.JSON `json:"contenu"`
+			Titre       string         `json:"titre"`
+			Description string         `json:"description"`
+			Id          uint           `json:"id"`
+		}
 
-		err = repo.Save(&lecon)
+		if err := c.BindJSON(&payload); err != nil {
+			return
+		}
+
+		// Ancienne version active
+		var oldFiles map[string]struct{}
+		if lesson.VersionActive != nil {
+			oldFiles, err = extractFileRefsFromJSON(lesson.VersionActive.Contenu)
+			if err != nil {
+				return
+			}
+		} else {
+			oldFiles = make(map[string]struct{})
+		}
+
+		// Nouvelle version
+		newFiles, err := extractFileRefsFromJSON(payload.Contenu)
 		if err != nil {
 			return
 		}
 
-		app.Success(c, http.StatusOK, lessonContent.ID)
+		//  Fichiers supprimés
+		deleted := diffDeleted(oldFiles, newFiles)
+
+		for _, f := range deleted {
+			mediaClient.MarkOrphan(f)
+		}
+
+		// Création nouvelle version
+		newContent := domain.ContenuLecon{
+			LeconID:      lesson.ID,
+			Contenu:      payload.Contenu,
+			DateCreation: time.Now(),
+		}
+
+		if err := contentRepo.Save(&newContent); err != nil {
+			return
+		}
+
+		// Mise à jour leçon
+		lesson.VersionActiveID = &newContent.ID
+		lesson.Titre = payload.Titre
+		lesson.Description = payload.Description
+
+		if err := lessonRepo.Save(&lesson); err != nil {
+			return
+		}
+
+		app.Success(c, http.StatusOK, newContent.ID)
 	}
 }
 
@@ -408,12 +459,13 @@ func getModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
 func listClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		classId, err := app.int64(c, "classId")
-			if err != nil {
+		if err != nil {
 			return
 		}
 		resources, err := repo.ListClassRessources(uint64(classId))
 		app.Success(c, http.StatusOK, resources)
-	}}
+	}
+}
 
 func deleteLesson(app *App, repo repository.LessonRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -427,23 +479,22 @@ func deleteLesson(app *App, repo repository.LessonRepository) gin.HandlerFunc {
 			return
 		}
 		app.Success(c, http.StatusOK, lesson)
-		
 
 	}
 }
+
 func DeleteClassResources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		Id, err := app.int64(c, "ressourceId")
-				if err != nil {
+		if err != nil {
 			return
 		}
 		err = repo.DeleteRessources(uint(Id))
-			if err != nil {
+		if err != nil {
 			return
 		}
 		app.Success(c, http.StatusOK, Id)
 
-		
 	}
 }
 

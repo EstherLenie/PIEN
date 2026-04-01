@@ -1,4 +1,4 @@
-const host = "/api/multimedia";
+const host = "http://localhost/api/multimedia";
 
 const MULTIMEDIA = {};
 

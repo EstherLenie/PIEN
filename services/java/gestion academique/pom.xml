@@ -8,7 +8,7 @@
 		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>PEIN</groupId>
+	<groupId>PIEN</groupId>
 	<artifactId>java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>java</name>

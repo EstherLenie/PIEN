@@ -1,0 +1,20 @@
+@startuml participation
+start
+:Utilisateur authentifié;
+:Sélectionner une réunion;
+:Demander l'accès;
+:Vérifier autorisations;
+if (Autorisé ?) then (Oui)
+  :Déterminer rôle;
+  :Générer JWT;
+  :Construire URL sécurisée;
+  :Rediriger vers Jitsi;
+  :Valider JWT côté Jitsi;
+  :Entrée effective dans la réunion;
+  :Webhook de notification envoyé au backend;
+  :Journaliser participation;
+else (Non)
+  :Refuser l'accès;
+endif
+stop
+@enduml

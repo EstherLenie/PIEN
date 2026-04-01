@@ -1,0 +1,16 @@
+@startuml planification
+start
+:Utilisateur authentifié;
+:Saisir informations de réunion;
+:Soumettre la planification;
+:Valider les règles métier;
+if (Validation OK ?) then (Oui)
+  :Créer la réunion;
+  :Enregistrer en base;
+  :Notifier les participants;
+  :Confirmer la planification;
+else (Non)
+  :Refuser la planification;
+endif
+stop
+@enduml

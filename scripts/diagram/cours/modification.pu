@@ -1,0 +1,16 @@
+@startuml modification
+start
+:Ouverture du contenu existant;
+:Modification du contenu;
+:Upload des nouveaux fichiers;
+:Réception des URLs;
+:Mise à jour du contenu;
+:Envoi au service de cours;
+:Détection et suppression des fichiers obsolètes;
+:Sauvegarde de la nouvelle version;
+if (Publication ?) then (oui)
+  :Émission d’un événement;
+  :Notification des étudiants;
+endif
+stop
+@enduml

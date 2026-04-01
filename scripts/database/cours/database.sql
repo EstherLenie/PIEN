@@ -69,6 +69,7 @@ CREATE TABLE materiels (
     type VARCHAR(50) NOT NULL,
     titre VARCHAR(255),
     description TEXT,
+    filename VARCHAR(255),
     url TEXT,
     source_id BIGINT,
     date_creation TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,

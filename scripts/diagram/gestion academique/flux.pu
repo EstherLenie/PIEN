@@ -1,0 +1,28 @@
+@startuml
+title Enregistrement d’un élève ou d’un enseignant
+
+actor Client as "Application cliente"
+participant Gateway as "Passerelle d’API"
+participant Academic as "Service de gestion académique"
+participant UserSvc as "Service de gestion des utilisateurs"
+database AcademicDB as "Base de données académique"
+database UserDB as "Base de données utilisateurs"
+participant Bus as "Service de communication interne"
+
+Client -> Gateway : Demande d’enregistrement\n(données académiques + identité)
+Gateway -> Academic : Transmettre la demande
+
+Academic -> Academic : Validation des données académiques
+
+Academic -> UserSvc : Création du compte utilisateur\n(appel synchrone)
+UserSvc -> UserDB : Persistance du compte\n(email, rôle, état inactif)
+UserSvc --> Academic : Identifiant utilisateur
+
+Academic -> AcademicDB : Création de l’entité académique\n(lien avec userId)
+
+Academic -> Bus : Publication événement\n(Utilisateur académique créé)
+
+Academic --> Gateway : Confirmation d’enregistrement
+Gateway --> Client : Réponse finale
+
+@enduml

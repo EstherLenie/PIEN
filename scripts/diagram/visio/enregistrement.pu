@@ -1,0 +1,19 @@
+@startuml enregistrement
+start
+:Réunion active;
+:Demande de démarrage d'enregistrement;
+:Vérifier droits du modérateur;
+if (Autorisé ?) then (Oui)
+  :Démarrer l'enregistrement via Jibri;
+  :Webhook ENREGISTREMENT_COMMENCE reçu;
+  :Journaliser début d'enregistrement;
+  :Capture audio/vidéo continue;
+  :Arrêt manuel ou fin réunion;
+  :Webhook ENREGISTREMENT_TERMINE reçu;
+  :Stocker fichier et URL;
+  :Journaliser métadonnées;
+else (Non)
+  :Refuser l'enregistrement;
+endif
+stop
+@enduml

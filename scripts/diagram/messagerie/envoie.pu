@@ -1,0 +1,15 @@
+@startuml envoie
+start
+:Utilisateur saisit un message;
+:Client envoie POST /messages via REST;
+:Serveur REST valide le token et le contenu;
+:Serveur enregistre le message dans la base NoSQL;
+if (Persistance OK ?) then (oui)
+  :Serveur renvoie confirmation au client;
+  :Serveur récupère tous les WebSocket de la conversation;
+  :Serveur diffuse le message à tous les participants via WebSocket;
+else (non)
+  :Serveur renvoie erreur;
+endif
+stop
+@enduml

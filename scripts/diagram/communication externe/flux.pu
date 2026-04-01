@@ -1,0 +1,15 @@
+@startuml flux
+start
+:Recevoir un événement du bus;
+:Filtrer l'événement;
+if (Événement nécessite un email ?) then (oui)
+  :Identifier les destinataires;
+  :Générer le contenu du message;
+  :Envoyer via AWS SES;
+  :Recevoir confirmation d'envoi;
+  :Émettre événement "Message envoyé";
+else (non)
+  :Ignorer l'événement;
+endif
+stop
+@enduml

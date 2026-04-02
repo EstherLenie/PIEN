@@ -24,7 +24,7 @@ export default function Versions({ data: { versions = [], versionActiveId } }) {
   return (
     <>
       {versions.length > 0 ? (
-        <ul className="flex gap-2">
+        <ul className="flex gap-2 flex-wrap">
           {versions.map((version) => (
             <VersionItem
               version={version}

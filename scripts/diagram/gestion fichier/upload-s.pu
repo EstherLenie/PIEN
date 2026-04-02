@@ -1,0 +1,21 @@
+@startuml upload
+actor Utilisateur
+participant "Passerelle API" as API
+participant "Backend Fichiers" as Backend
+participant "ClamAV" as Antivirus
+participant "S3" as Stockage
+database "MongoDB" as DB
+participant "Cache Redis" as Cache
+
+Utilisateur -> API : Requête upload + fichier
+API -> API : Valide jeton et droits
+API -> Backend : Transmet requête validée
+Backend -> Antivirus : Analyse fichier
+Antivirus --> Backend : Fichier sain
+Backend -> Stockage : Upload fichier
+Stockage --> Backend : URL S3
+Backend -> DB : Enregistre métadonnées (nom, taille, URL, propriétaire)
+Backend -> Cache : Mettre en cache le fichier
+Backend --> API : Confirmation upload
+API --> Utilisateur : Retour succès + URL
+@enduml

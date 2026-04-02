@@ -1,0 +1,14 @@
+@startuml flux
+actor Système
+participant "Service Communication Externe" as Backend
+participant "Bus d’événements" as Bus
+participant "Service cloud SES" as SES
+
+Système -> Bus : Publie un événement (réunion, cours, ressource)
+Bus -> Backend : Transmet l'événement
+Backend -> Backend : Filtre l'événement et identifie les destinataires
+Backend -> Backend : Prépare le contenu du message
+Backend -> SES : Envoie le message
+SES --> Backend : Confirme l'envoi
+Backend -> Bus : Émet un événement "Message envoyé"
+@enduml

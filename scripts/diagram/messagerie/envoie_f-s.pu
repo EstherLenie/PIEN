@@ -1,0 +1,41 @@
+@startuml Envoi d’un message avec pièce jointe
+
+actor Utilisateur
+participant "Application cliente" as Client
+participant "Passerelle API" as Gateway
+participant "Service de gestion\ndes fichiers" as FileService
+participant "Service de messagerie" as Messaging
+database "Base NoSQL" as DB
+
+== Saisie du message ==
+Utilisateur -> Client : Saisit le message\net sélectionne un fichier
+
+== Téléversement du fichier ==
+Client -> FileService : POST /files\n(fichier, token)
+FileService -> FileService : Validation et stockage du fichier
+FileService --> Client : URL sécurisée du fichier
+
+== Envoi du message ==
+Client -> Gateway : POST /messages\n(texte, URL fichier,\nidConversation, token)
+
+== Validation et transfert ==
+Gateway -> Gateway : Validation du token\nVérification des droits
+Gateway -> Messaging : Transfert de la requête
+
+== Validation et persistance ==
+Messaging -> Messaging : Validation du contenu\nVérification appartenance conversation
+Messaging -> DB : Enregistrement du message\n(texte, URL fichier, auteur, timestamp)
+DB --> Messaging : Confirmation de persistance
+
+== Confirmation ==
+Messaging --> Gateway : Statut succès + métadonnées
+Gateway --> Client : Réponse REST (succès)
+
+== Diffusion temps réel ==
+Messaging -> Messaging : Récupération des WebSocket\nassociés à la conversation
+Messaging -> Client : Événement WebSocket\n(message + URL fichier)
+
+== Mise à jour UI ==
+Client -> Client : Affichage du message\net accès à la pièce jointe via URL
+
+@enduml

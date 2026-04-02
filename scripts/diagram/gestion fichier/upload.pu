@@ -1,0 +1,22 @@
+@startuml upload
+|Utilisateur|
+start
+:Sélectionner un fichier à téléverser;
+|Backend|
+:Recevoir le fichier;
+:Envoyer le fichier à ClamAV pour analyse;
+if (Fichier sain ?) then (oui)
+    :Générer une URL unique (UUID);
+    :Envoyer le fichier au stockage S3;
+    if (Stockage réussi ?) then (oui)
+        :Enregistrer les métadonnées dans la base de données;
+        :Mettre le fichier en cache;
+        :Retourner l'URL au client;
+    else (non)
+        :Retourner une erreur stockage;
+    endif
+else (non)
+    :Retourner une erreur ClamAV;
+endif
+stop
+@enduml

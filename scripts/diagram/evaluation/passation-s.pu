@@ -1,0 +1,24 @@
+@startuml passation
+
+actor Etudiant as Client
+participant "Passerelle API" as Gateway
+participant "Service d'évaluation" as EvalService
+database "Base de données" as DB
+participant "Système de messagerie / événements" as Events
+
+== Accès à l'évaluation ==
+Client -> Gateway : Demande d'accès à l'épreuve
+Gateway -> EvalService : Vérification des droits et disponibilité
+EvalService -> DB : Vérifie période et permissions
+EvalService --> Gateway : Confirmation et contenu de l'épreuve
+Gateway --> Client : Retour des questions et références fichiers
+
+== Enregistrement des réponses ==
+Client -> Gateway : Envoi des réponses progressives
+Gateway -> EvalService : Persistes les réponses
+EvalService -> DB : Enregistrement des réponses
+
+== Clôture de la session ==
+EvalService -> DB : Verrouillage de la session à la fin
+EvalService -> Events : Publication événement "Passation terminée"
+@enduml

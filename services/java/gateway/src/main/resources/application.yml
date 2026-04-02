@@ -1,0 +1,81 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+
+        # /api/utilisateurs/** → localhost:8081/utilisateurs/**
+        - id: utilisateurs-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/utilisateurs/**
+          filters:
+            - StripPrefix=1
+
+        # /api/cours/** → localhost:8082/cours/**
+        - id: cours-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/cours/**
+          filters:
+            - StripPrefix=1
+
+        # /api/multimedia/** → localhost:8083/multimedia/**
+        - id: multimedia-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/multimedia/**
+          filters:
+            - StripPrefix=1
+
+        # /api/classes/** → localhost:8084/classes/**
+        - id: classes-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/classes/**
+          filters:
+            - StripPrefix=1
+
+      # CORS — répond aux preflight OPTIONS directement depuis la gateway
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"   # port Vite par défaut, ajuste si besoin
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+      # Évite les headers CORS en double si les services derrière en ajoutent aussi
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+      # Timeout global
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    gateway:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

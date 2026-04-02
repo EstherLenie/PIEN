@@ -1,0 +1,17 @@
+@startuml planification
+actor Enseignant
+participant "Application Web" as Web
+participant "Service Visioconférence" as VC
+database "Base de données" as DB
+participant "Service de communication" as Com
+
+Enseignant -> Web : Planifier réunion
+Web -> VC : Demande de planification
+VC -> VC : Validation métier
+VC -> DB : Enregistrer réunion
+DB --> VC : Réunion persistée
+VC -> Com : Notifier participants
+Com --> VC : Notification envoyée
+VC --> Web : Confirmation
+Web --> Enseignant : Réunion planifiée
+@enduml

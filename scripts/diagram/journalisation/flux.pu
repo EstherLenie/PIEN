@@ -1,0 +1,18 @@
+@startuml
+actor "Service métier" as Service
+participant "Service de communication interne\n(Redis Pub/Sub)" as Bus
+participant "Service de journalisation\n(Application)" as Logger
+database "Base de données\nLogs" as DB
+
+Service -> Bus : Publie un événement\n(log à produire)
+activate Bus
+
+Bus -> Logger : Diffuse l’événement\n(asynchrone)
+deactivate Bus
+
+activate Logger
+Logger -> Logger : Validation / enrichissement\n(métadonnées, gravité, contexte)
+Logger -> DB : Persistance du journal
+deactivate Logger
+
+@enduml

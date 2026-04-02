@@ -1,0 +1,11 @@
+@startuml transfert
+actor ServiceEmetteur
+participant "Service de communication interne\n(Redis Pub/Sub)" as Redis
+participant "Service Abonné A" as AbonneA
+participant "Service Abonné B" as AbonneB
+
+ServiceEmetteur -> Redis: Crée Publie l'événement (type + payload)
+Redis -> AbonneA: Transmet l'événement
+Redis -> AbonneB: Transmet l'événement
+
+@enduml

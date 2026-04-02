@@ -33,15 +33,16 @@ export default function AddRessourceForm({
     };
     if (file != null) {
       const res = await uploadFile(
-        MULTIMEDIA.UPLOAD_FILE({ file, filename: file.name })
+        MULTIMEDIA.UPLOAD_FILE({ file, filename: file.name }),
       );
 
       data.url = res.data.url;
       data.type = res.data.type;
       data.filename = file.name;
       console.log({ res, data });
+    } else {
+      data.type = "URL";
     }
-    data.type = "URL";
     try {
       const res = await execute(COURS.SAVE_RESSOURCE({ classeId, data }));
       console.log(res);

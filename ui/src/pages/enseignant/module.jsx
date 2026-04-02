@@ -41,13 +41,13 @@ export default function Module() {
           lowerCaseName.startsWith(inputValue) ||
           lowerCaseName.split(" ").some((part) => part.startsWith(inputValue))
         );
-      })
+      }),
     );
   };
 
   const onSortedModules = async () => {
     const r = await execute(
-      COURS.SORT_MODULES({ classeId, data: { content: sortedModules } })
+      COURS.SORT_MODULES({ classeId, data: { content: sortedModules } }),
     );
     if (r.error) {
       return;
@@ -78,7 +78,8 @@ export default function Module() {
 
   const createModule = async (data) => {
     const r = await execute(COURS.CREATE_MODULE({ classeId, data: data }));
-    setModules((s) => [...s, { ...r }]);
+    setModules((s) => [...s, { ...r.data }]);
+    setFilteredModules((s) => [...s, { ...r.data }]);
     closeMedatadaModal();
   };
 

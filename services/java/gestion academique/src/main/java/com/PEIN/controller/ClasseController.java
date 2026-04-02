@@ -12,9 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/classes")
+@RequestMapping("/classes")
 @RequiredArgsConstructor
 public class ClasseController {
 
@@ -38,14 +40,19 @@ public class ClasseController {
 
     // 3️⃣ Lister toutes les classes d’un enseignant
     @GetMapping("/teacher/{enseignantId}")
-    public List<Classe> getClassesByTeacher(@PathVariable Long enseignantId) {
+    public Map<String, Object> getClassesByTeacher(@PathVariable Long enseignantId) {
         List<Classe> classes = classeService.getClassesByTeacher(enseignantId);
-        return classes;
+        return Map.of("data",classes);
     }
     @GetMapping("/")
     public List<ClassDetailsDTO> getAllClasses() {
         List<ClassDetailsDTO> classes = classeService.getAllClasses();
         return classes;
+    }
+    @GetMapping("/{id}")
+    public Map<String, Object>getClasse(@PathVariable Long classeId) {
+        Optional<Classe> classes = classeService.getClasses(classeId);
+        return Map.of("data",classes);
     }
     @GetMapping("/assignable_student/{classeId}")
     public List<EtudiantDTO> getStudentThatCanBeAssigned(

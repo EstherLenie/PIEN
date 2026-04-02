@@ -9,7 +9,13 @@ CLASSE.ALL = () => ({
 
 CLASSE.ENSEIGNANT = (enseignantId) => ({
   method: "GET",
-  url: host + "/" + enseignantId,
+  url: host + "/teacher/" + enseignantId,
+  cacheOptions: { cacheFirst: true, cacheResponse: true },
+});
+
+CLASSE.BYID = (classeId) => ({
+  method: "GET",
+  url: host + "/classes/" + classeId,
   cacheOptions: { cacheFirst: true, cacheResponse: true },
 });
 

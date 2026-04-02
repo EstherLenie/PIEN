@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +54,9 @@ public class ClasseService {
     public List<ClassDetailsDTO> getAllClasses() {
         return classeRepository.findAllClasseCreated();
     }
-
+    public Optional<Classe> getClasses(Long classeId) {
+        return classeRepository.findById(classeId);
+    }
 
     // Assigner un élève à une classe
     public ClasseEleves assignStudentToClasse(Long classeId, Long eleveId) {

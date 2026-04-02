@@ -18,6 +18,7 @@ export default function EnseignantClasses() {
 
   async function loadClasses() {
     const response = await execute(CLASSE.ENSEIGNANT(id));
+    console.log(response);
     if (!response.data) {
       return;
     }
@@ -38,7 +39,7 @@ export default function EnseignantClasses() {
           lowerCaseName.startsWith(inputValue) ||
           lowerCaseName.split(" ").some((part) => part.startsWith(inputValue))
         );
-      })
+      }),
     );
   };
 

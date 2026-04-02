@@ -1,0 +1,30 @@
+@startuml correction
+actor Enseignant as Teacher
+participant "Passerelle API" as Gateway
+participant "Service d'évaluation" as EvalService
+database "Base de données" as DB
+participant "Système de messagerie / événements" as Events
+
+== Récupération des réponses ==
+Teacher -> Gateway : Demande des réponses de l'évaluation
+Gateway -> EvalService : Transfert de la requête
+EvalService -> DB : Récupère les réponses
+EvalService --> Gateway : Retour des réponses
+Gateway --> Teacher : Transmission à l'enseignant
+
+== Correction ==
+Teacher -> Gateway : Saisie corrections manuelles
+Gateway -> EvalService : Persistance des notes manuelles
+EvalService -> DB : Enregistrement des notes
+
+== Correction automatique ==
+EvalService -> DB : Exécute correction automatique des questions fermées
+EvalService --> DB : Mise à jour des notes automatiques
+
+== Calcul et validation ==
+EvalService -> DB : Combine notes automatiques et manuelles
+EvalService --> DB : Notes finales validées
+
+== Publication et notifications ==
+EvalService -> Events : Publication des résultats
+@enduml

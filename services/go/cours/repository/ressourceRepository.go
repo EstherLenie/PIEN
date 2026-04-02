@@ -35,6 +35,7 @@ func (r *appRessourceRepository) ListClassRessources(classId uint64) ([]domain.M
 
 	return ressources, result.Error
 }
+
 func (r *appRessourceRepository) DeleteRessources(Id uint) error {
 	result := r.db.
 		Delete(&domain.Materiel{ID: Id})

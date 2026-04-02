@@ -1,0 +1,18 @@
+@startuml envoie
+start
+:Utilisateur saisit message et choisit fichier;
+:Client envoie fichier au service de fichiers;
+:Service de fichiers scanne et stocke le fichier;
+:Service renvoie URL du fichier au client;
+:Client envoie message via POST /messages (REST) avec URL;
+:Serveur valide token et contenu;
+:Serveur persiste message + URL dans base NoSQL;
+if (Persistance OK ?) then (oui)
+  :Serveur renvoie confirmation au client;
+  :Serveur récupère tous les WebSocket de la conversation;
+  :Diffusion du message + URL pièce jointe via WebSocket;
+else (non)
+  :Serveur renvoie erreur;
+endif
+stop
+@enduml

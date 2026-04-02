@@ -1,0 +1,19 @@
+@startuml enregistrement
+actor Modérateur
+participant "Application Web" as Web
+participant "Backend Visioconférence" as VC
+participant "Jitsi / Jibri" as Jibri
+database "Base de données" as DB
+
+Modérateur -> Web : Demander démarrage enregistrement
+Web -> VC : Valider droits
+VC -> Jibri : Démarrer enregistrement
+Jibri -> VC : Webhook ENREGISTREMENT_COMMENCE
+VC -> DB : Journaliser début d'enregistrement
+note right: La réunion continue...
+Modérateur -> Web : Arrêter enregistrement / fin réunion
+Web -> VC : Demander arrêt enregistrement
+VC -> Jibri : Arrêter enregistrement
+Jibri -> VC : Webhook ENREGISTREMENT_TERMINE
+VC -> DB : Journaliser fin et stocker URL du fichier
+@enduml

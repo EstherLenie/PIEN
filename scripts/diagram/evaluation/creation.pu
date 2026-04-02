@@ -1,0 +1,81 @@
+@startuml Flux de création d'une évaluation
+
+start
+
+partition "Application cliente" {
+    :Préparer les données de l’évaluation;
+    :Détecter les ressources associées;
+}
+
+if (Présence de fichiers ?) then (Oui)
+
+    partition "Application cliente" {
+        :Envoyer les fichiers à la passerelle;
+    }
+
+    partition "Passerelle d’API" {
+        :Router vers le service de gestion des fichiers;
+    }
+
+    partition "Service de gestion des fichiers" {
+        :Stocker les fichiers;
+        :Générer les URLs;
+    }
+
+    partition "Passerelle d’API" {
+        :Retourner les URLs;
+    }
+
+    partition "Application cliente" {
+        :Mettre à jour l’évaluation avec les URLs;
+    }
+
+else (Non)
+    note right
+      Aucune ressource fichier
+      associée à l’évaluation
+    end note
+endif
+
+partition "Application cliente" {
+    :Envoyer la requête de création de l’évaluation;
+}
+
+partition "Passerelle d’API" {
+    :Router la requête vers le service d’évaluation;
+}
+
+partition "Service d’évaluation" {
+    :Valider la structure de l’évaluation;
+    :Vérifier la cohérence des ressources;
+}
+
+if (Évaluation valide ?) then (Oui)
+
+    partition "Service d’évaluation" {
+        :Déterminer l’état initial\n(brouillon / planifiée / publiée);
+        :Persister l’évaluation;
+    }
+
+    partition "Base de données" {
+        :Enregistrer l’évaluation\net les questions;
+    }
+
+    partition "Service d’évaluation" {
+        :Publier l’événement\nÉvaluationCréée;
+    }
+
+    partition "Bus d’événements" {
+        :Diffuser l’événement;
+    }
+
+else (Non)
+
+    partition "Service d’évaluation" {
+        :Rejeter la création;
+    }
+
+endif
+
+stop
+@enduml

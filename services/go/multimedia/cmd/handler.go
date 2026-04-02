@@ -11,7 +11,10 @@ import (
 
 func GetFileHandler(app *App, repo MultimediaRepository, storage fileStorage) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		url, _ := ctx.Params.Get("url")
+		url, ok := ctx.Params.Get("url")
+		if !ok {
+			return
+		}
 
 		if cachedFile, ok := app.cache.Get(url); ok {
 			content, ok := (cachedFile.GetContent()).([]byte)
@@ -68,10 +71,9 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 		}
 
 		contentType := http.DetectContentType(content)
+		url := uuid.NewString() + filepath.Ext(file.Filename)
 
-		url := uuid.NewString() + filepath.Ext(file.Filename) // creation url
-
-		path, err := storage.save(url, content) // creation de chemin sur le disque
+		path, err := storage.save(file.Filename, content)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "cannot save file",
@@ -97,5 +99,31 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 		app.cache.Put(multimedia.Url, content) //met en cache
 		app.Success(ctx, http.StatusOK, map[string]string{"url": multimedia.Url, "type": multimedia.Type})
 
+	}
+}
+
+func DeleteFile(app *App, repo MultimediaRepository, storage fileStorage) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		url, ok := ctx.Params.Get("url")
+		if !ok {
+			return
+		}
+
+		m, err := repo.findByUrl(url)
+		if err != nil {
+			return
+		}
+
+		err = repo.Delete(url)
+		if err != nil {
+			return
+		}
+
+		err = storage.delete(m.Path)
+		if err != nil {
+			return
+		}
+
+		app.Success(ctx, http.StatusNoContent, nil)
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"PIEN/cours/repository"
+	"PIEN/cours/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,7 @@ func route(app *App) http.Handler {
 	lessonsRepository := repository.NewLessonRepository(app.GetDb())
 	ressourceRepository := repository.NewRessourceRepository(app.GetDb())
 	lessonContentRepository := repository.NewLessonContentRepository(app.GetDb())
+	mediaService := service.NewHttpMediaClient("", "")
 
 	router.GET("/cours/models", listModels(app, modelRepository))
 	router.GET("/cours/models/presets", listEnvironment(app, hdrRepository))
@@ -32,7 +34,7 @@ func route(app *App) http.Handler {
 	router.POST("/cours/classes/:classId/ressources", addRessources(app, ressourceRepository))
 
 	router.PUT("/cours/classes/:classId/modules/:moduleId", updateModule(app, moduleRepository))
-	router.PUT("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", createLessonContent(app, lessonsRepository))
+	router.PUT("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", createLessonContent(app, lessonsRepository, lessonContentRepository, mediaService))
 	router.POST("/cours/classes/:classId/modules/:moduleId/lessons/:leconId", saveNewContenuLecon(app, lessonContentRepository, lessonsRepository))
 	router.PUT("/cours/classes/:classId/modules/:moduleId/order-lessons", orderModuleLessons(app, lessonsRepository))
 	router.PUT("/cours/classes/:classId/order-modules", orderClassModules(app, moduleRepository))
@@ -40,6 +42,7 @@ func route(app *App) http.Handler {
 
 	router.DELETE("/cours/classes/:classId/modules/:moduleId", deleteModule(app, moduleRepository))
 	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId", deleteLesson(app, lessonsRepository))
+	router.DELETE("/cours/classes/:classId/modules/:moduleId/lessons/:lessonId/versions/:versionId", deleteLessonContent(app, lessonContentRepository))
 
 	return router
 }

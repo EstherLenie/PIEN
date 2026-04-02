@@ -1,4 +1,4 @@
-const host = "/api/classes";
+const host = "http://localhost:8080/api/classes";
 
 const CLASSE = {};
 

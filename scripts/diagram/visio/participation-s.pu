@@ -1,0 +1,21 @@
+@startuml  participation
+actor Utilisateur
+participant "Application Web" as Web
+participant "Backend Visioconférence" as VC
+participant "Jitsi" as Jitsi
+database "Base de données" as DB
+
+Utilisateur -> Web : Sélectionner réunion et rejoindre
+Web -> VC : Demande d'accès
+VC -> VC : Vérifier droits
+VC -> VC : Déterminer rôle
+VC -> VC : Générer JWT
+VC -> DB : Journaliser tentative
+VC --> Web : URL sécurisée avec JWT
+Web -> Utilisateur : Redirection vers Jitsi
+Utilisateur -> Jitsi : Rejoindre salle avec JWT
+Jitsi -> Jitsi : Valider JWT et rôle
+Jitsi -> VC : Webhook PARTICIPANT_JOINED
+VC -> DB : Journaliser participation effective
+Jitsi --> Utilisateur : Accès autorisé
+@enduml

@@ -33,3 +33,8 @@ func (r *appLessonContentRepository) ListLessonContent(lessonId int64) ([]domain
 func (r *appLessonContentRepository) Save(c *domain.ContenuLecon) error {
 	return r.db.Save(c).Error
 }
+
+func (r *appLessonContentRepository) Delete(versionId int64) error {
+	c := domain.ContenuLecon{ID: uint(versionId)}
+	return r.db.Delete(&c).Error
+}

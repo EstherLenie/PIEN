@@ -1,4 +1,4 @@
-const host = "/api/cours";
+const host = "http://localhost:8080/api/cours";
 
 const COURS = {};
 
@@ -162,6 +162,20 @@ COURS.DELETE_LECON = ({ classeId, moduleId, leconId }) => ({
     moduleId +
     "/lessons/" +
     leconId,
+});
+
+COURS.DELETE_LECON_CONTENT = ({ classeId, moduleId, leconId, versionId }) => ({
+  method: "DELETE",
+  url:
+    host +
+    "/classes/" +
+    classeId +
+    "/modules/" +
+    moduleId +
+    "/lessons/" +
+    leconId +
+    "/versions/" +
+    versionId,
 });
 
 export default COURS;

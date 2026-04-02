@@ -1,0 +1,23 @@
+@startuml get
+actor Utilisateur
+participant "Passerelle API" as API
+participant "Backend Fichiers" as Backend
+database "MongoDB" as DB
+participant "Cache Redis" as Cache
+participant "S3" as Stockage
+
+Utilisateur -> API : Requête get + URL du fichier
+API -> API : Valide jeton et droits
+API -> Backend : Transmet requête validée
+Backend -> Cache : Vérifie présence du fichier
+alt Fichier en cache
+    Cache --> Backend : Fichier
+else Fichier non en cache
+    Backend -> DB : Récupère métadonnées
+    Backend -> Stockage : Télécharge fichier depuis S3
+    Stockage --> Backend : Fichier
+    Backend -> Cache : Mettre en cache
+end
+Backend --> API : Renvoie fichier
+API --> Utilisateur : Fichier retourné
+@enduml

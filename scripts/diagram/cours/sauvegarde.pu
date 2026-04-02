@@ -1,0 +1,15 @@
+@startuml sauvegarde
+start
+:Déclenchement de la sauvegarde;
+:Upload des fichiers;
+:Stockage des fichiers;
+:Réception des URLs;
+:Mise à jour du contenu;
+:Envoi du contenu au service de cours;
+:Persistance en base;
+if (Publication automatique ?) then (oui)
+  :Émission d’un événement;
+  :Notification des étudiants;
+endif
+stop
+@enduml

@@ -1,0 +1,16 @@
+@startuml creation
+start
+:Client s'authentifie via REST;
+:Serveur REST vérifie les credentials dans la base NoSQL;
+if (Authentification OK ?) then (oui)
+  :Serveur REST renvoie token/session;
+  :Client ouvre connexion WebSocket avec token;
+  :Serveur WebSocket valide le token;
+  :Serveur récupère les conversations actives de l'utilisateur;
+  :Associe WebSocket aux conversations;
+  :Envoie événement "connexion ready" au client;
+else (non)
+  :Serveur REST renvoie erreur;
+endif
+stop
+@enduml

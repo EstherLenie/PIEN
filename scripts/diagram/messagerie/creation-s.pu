@@ -1,0 +1,43 @@
+@startuml Établissement de la connexion WebSocket – Service de messagerie
+
+actor Utilisateur
+participant "Application cliente" as Client
+participant "API Gateway" as Gateway
+participant "Service de messagerie" as Messaging
+database "Base NoSQL" as DB
+
+== Requête de découverte ==
+Utilisateur -> Client : Connexion à la plateforme
+Client -> Gateway : Requête REST de découverte (token)
+Gateway -> Gateway : Validation du token\nVérification des droits
+Gateway -> Messaging : Transmission de la requête de découverte
+
+== Fourniture de l’URL WebSocket ==
+Messaging -> Gateway : URL du point d’accès WebSocket
+Gateway -> Client : URL du service de messagerie
+
+== Ouverture de la connexion WebSocket ==
+Client -> Messaging : Handshake WebSocket 
+Messaging -> Messaging : Authentification de l’utilisateur
+Messaging -> Messaging : Association WebSocket ↔ utilisateur
+
+note right of Messaging
+Chaque utilisateur possède
+une unique connexion WebSocket
+end note
+
+== Synchronisation des données ==
+Messaging -> DB : Récupération des conversations actives
+DB --> Messaging : Liste des conversations
+Messaging -> Messaging : Association conversations ↔ WebSocket
+
+== Confirmation ==
+Messaging -> Client : Événement WebSocket\n« Connexion établie et synchronisée »
+
+note left of Client
+Le client peut désormais
+écouter les messages et
+événements en temps réel
+end note
+
+@enduml

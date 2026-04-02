@@ -1,0 +1,28 @@
+@startuml Flux de création d'une évaluation
+
+actor Enseignant as Client
+
+participant "Application cliente" as Client
+participant "Passerelle d’API" as Gateway
+participant "Service de gestion\ndes fichiers" as FileService
+participant "Service d’évaluation" as EvalService
+participant "Base de données" as DB
+participant "Bus d’événements" as EventBus
+
+    Client -> Gateway : Upload des fichiers
+    Gateway -> FileService : Transmettre les fichiers
+    FileService -> FileService : Stockage des fichiers
+    FileService -> Gateway : URLs des fichiers
+    Gateway -> Client : URLs des fichiers
+
+Client -> Gateway : Création de l’évaluation (JSON + URLs)
+Gateway -> EvalService : Requête de création d’évaluation
+
+EvalService -> EvalService : Validation de la structure\net des ressources
+
+    EvalService -> DB : Persistance de l’évaluation\net des questions
+    EvalService -> EventBus : Publier événement\nÉvaluationCréée
+    EvalService -> Gateway : Confirmation de création
+    Gateway -> Client : Confirmation de création
+
+@enduml

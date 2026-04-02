@@ -1,0 +1,35 @@
+@startuml Envoi d’un message texte (sans pièce jointe)
+
+actor Utilisateur
+participant "Application cliente" as Client
+participant "Passerelle API" as Gateway
+participant "Service de messagerie" as Messaging
+database "Base NoSQL" as DB
+
+== Saisie du message ==
+Utilisateur -> Client : Saisit et envoie le message
+
+== Envoi via REST ==
+Client -> Gateway : POST (contenu, idConversation, token)
+
+== Validation et transfert ==
+Gateway -> Gateway : Validation du token\nVérification des droits
+Gateway -> Messaging : Transfert de la requête
+
+== Validation et persistance ==
+Messaging -> Messaging : Validation du contenu\nVérification appartenance conversation
+Messaging -> DB : Enregistrement du message\n(contenu, auteur, timestamp, conversation)
+DB --> Messaging : Confirmation de persistance
+
+== Confirmation ==
+Messaging --> Gateway : Statut succès + métadonnées
+Gateway --> Client : Réponse REST (succès)
+
+== Diffusion temps réel ==
+Messaging -> Messaging : Récupération des WebSocket\nassociés à la conversation
+Messaging -> Client : Événement WebSocket\n(message)
+
+== Mise à jour UI ==
+Client -> Client : Mise à jour de l’interface\n(statuts, affichage)
+
+@enduml

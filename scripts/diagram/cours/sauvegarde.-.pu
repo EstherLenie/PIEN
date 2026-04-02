@@ -1,0 +1,16 @@
+@startuml sauvegarde
+actor Enseignant
+participant "Application cliente" as Client
+participant "Service de gestion\ndes fichiers" as Files
+participant "Service de gestion\ndes cours" as Courses
+participant "Base de données" as DB
+participant "Bus d’événements" as Bus
+
+Enseignant -> Client : Lancer sauvegarde
+Client -> Files : Upload des fichiers
+Files -> Client : URLs des fichiers
+Client -> Client : Mise à jour du contenu (URLs)
+Client -> Courses : Envoi du contenu JSON
+Courses -> DB : Persistance du contenu
+Courses -> Bus : Événement publication (si applicable)
+@enduml

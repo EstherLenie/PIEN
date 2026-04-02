@@ -63,7 +63,7 @@ COURS.SAVE_CONTENT = ({ classeId, moduleId, leconId, data }) => ({
 });
 COURS.SAVE_RESSOURCE = ({ classeId, data }) => ({
   method: "POST",
-  url: host + "/classes/" + classeId + "/ressources/" + ressourceId,
+  url: host + "/classes/" + classeId + "/ressources",
   body: data,
 });
 

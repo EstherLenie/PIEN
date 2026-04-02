@@ -17,6 +17,7 @@ type appRessourceRepository struct {
 type RessourceRepository interface {
 	ListClassRessources(classId uint64) ([]domain.Materiel, error)
 	DeleteRessources(Id uint) error
+	AddRessources(*domain.Materiel) error
 }
 
 // constructeur
@@ -34,9 +35,13 @@ func (r *appRessourceRepository) ListClassRessources(classId uint64) ([]domain.M
 
 	return ressources, result.Error
 }
+
 func (r *appRessourceRepository) DeleteRessources(Id uint) error {
 	result := r.db.
-		Delete(&domain.Materiel{BaseModel: domain.BaseModel{ID: Id}})
+		Delete(&domain.Materiel{ID: Id})
 
 	return result.Error
+}
+func (r *appRessourceRepository) AddRessources(ressource *domain.Materiel) error {
+	return r.db.Save(ressource).Error
 }

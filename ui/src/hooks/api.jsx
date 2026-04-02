@@ -52,7 +52,7 @@ export default function useApi() {
 
   const download = async (config) => {
     let result;
-
+    console.log(config);
     try {
       const res = await fetch(config.url);
       const blob = await res.blob();
@@ -75,10 +75,11 @@ export default function useApi() {
     });
 
     if (!res.ok) {
-      throw new Error("Upload failed");
+      return { ok: false };
     }
 
-    return res.json();
+    const { data } = await res.json();
+    return { data, ok: true };
   };
 
   return { execute, download, requestState, uploadFile };

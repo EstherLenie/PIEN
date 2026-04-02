@@ -13,5 +13,11 @@ MULTIMEDIA.UPLOAD_FILE = ({ file, filename }) => {
     formData,
   };
 };
+MULTIMEDIA.DOWNLOAD = ({ url, filename }) => {
+  return {
+    url: host + "/" + url,
+    filename,
+  };
+};
 
 export default MULTIMEDIA;

@@ -518,6 +518,27 @@ func deleteModule(app *App, repo repository.ModuleRepository) gin.HandlerFunc {
 		app.Success(c, http.StatusOK, module)
 	}
 }
+func addRessources(app *App, repo repository.RessourceRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		classId, err := app.int64(c, "classId")
+		if err != nil {
+			return
+		}
+		var ressource domain.Materiel
+		err = c.BindJSON(&ressource)
+		if err != nil {
+			return
+		}
+		ressource.ClassId = uint64(classId)
+		ressource.SourceId = nil
+		err = repo.AddRessources(&ressource)
+		if err != nil {
+			return
+		}
+		app.Success(c, http.StatusOK, ressource)
+
+	}
+}
 
 func deleteLessonContent(app *App, repo repository.LessonContentRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {

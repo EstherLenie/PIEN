@@ -96,8 +96,8 @@ func SaveFileHandler(app *App, repo MultimediaRepository, storage fileStorage) g
 			return
 		}
 
-		app.cache.Put(multimedia.Url, content)
-		app.Success(ctx, http.StatusOK, map[string]string{"url": multimedia.Url})
+		app.cache.Put(multimedia.Url, content) //met en cache
+		app.Success(ctx, http.StatusOK, map[string]string{"url": multimedia.Url, "type": multimedia.Type})
 
 	}
 }

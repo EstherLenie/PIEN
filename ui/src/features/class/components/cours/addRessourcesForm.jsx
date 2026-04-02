@@ -1,13 +1,18 @@
 import { useState } from "react";
 import COURS from "../../../../services/api/cours";
+import MULTIMEDIA from "../../../../services/api/multimedia";
 import useApi from "../../../../hooks/api";
 
-export default function AddRessourceForm({ classeId, closemodal }) {
-  const [title, setTitle] = useState("");
+export default function AddRessourceForm({
+  classeId,
+  closeMedatadaModal,
+  onAddSuccess,
+}) {
+  const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [url, setUrl] = useState("");
-  const { execute } = useApi();
+  const { execute, uploadFile } = useApi();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -21,22 +26,39 @@ export default function AddRessourceForm({ classeId, closemodal }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const payload = {
-      title,
+    const data = {
+      titre,
       description,
       url,
-      file,
     };
+    if (file != null) {
+      const res = await uploadFile(
+        MULTIMEDIA.UPLOAD_FILE({ file, filename: file.name })
+      );
 
+      data.url = res.data.url;
+      data.type = res.data.type;
+      data.filename = file.name;
+      console.log({ res, data });
+    }
+    data.type = "URL";
     try {
-      const res = await execute(COURS.SAVE_RESSOURCE({ classeId, payload }));
-      if (!res.ok) throw new Error("Erreur lors de la création");
+      const res = await execute(COURS.SAVE_RESSOURCE({ classeId, data }));
+      console.log(res);
+      if (res.error) {
+        alert("Sauvegarde echoue");
+        return;
+      }
       alert("Classe créée avec succès");
-      closemodal;
+      onAddSuccess(res.data);
+      setFile(null);
+      setTitre("");
+      setDescription("");
+      setUrl("");
+
+      closeMedatadaModal();
     } catch (err) {
       alert(err.message);
-      closemodal;
     }
   };
 
@@ -50,8 +72,8 @@ export default function AddRessourceForm({ classeId, closemodal }) {
             <input
               type="text"
               className="w-full border rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-200"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={titre}
+              onChange={(e) => setTitre(e.target.value)}
               required
             />
           </div>

@@ -11,8 +11,8 @@ export const storage = {
 export function deepCopyJSON(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-export const apiUrl="api/"
-export const baseUrl= `http://${window.location.hostname}:8084/`
+export const apiUrl = "api/";
+export const baseUrl = `http://${window.location.hostname}:8084/`;
 
 /**
  *
@@ -109,4 +109,49 @@ export function split(a) {
     .split("\n")
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
+}
+export function formatMimeType(mimeType) {
+  if (!mimeType) return "Inconnu";
+
+  const map = {
+    "application/pdf": "PDF",
+    "application/msword": "Word (.doc)",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      "Word (.docx)",
+    "application/vnd.ms-excel": "Excel (.xls)",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      "Excel (.xlsx)",
+    "application/vnd.ms-powerpoint": "PowerPoint (.ppt)",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      "PowerPoint (.pptx)",
+    "text/plain": "Texte (.txt)",
+    "text/html": "HTML",
+    "text/css": "CSS",
+    "application/json": "JSON",
+
+    "image/jpeg": "Image",
+    "image/png": "Image",
+    "image/gif": "Image",
+    "image/webp": "Image",
+    "image/svg+xml": "Image",
+
+    "video/mp4": "Vidéo",
+    "video/webm": "Vidéo",
+
+    "audio/mpeg": "Audio",
+    "audio/wav": "Audio",
+    "audio/ogg": "Audio",
+
+    "application/zip": "ZIP",
+    "application/x-7z-compressed": "7-Zip",
+    "application/x-rar-compressed": "RAR",
+    URL: "URL",
+  };
+
+  // Si on le connaît → retourne le label propre
+  if (map[mimeType]) return map[mimeType];
+
+  // Sinon → garde la partie principale (ex: image/png -> image)
+  const [type, subtype] = mimeType.split("/");
+  return `${type} (${subtype})`;
 }
